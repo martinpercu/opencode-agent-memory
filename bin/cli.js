@@ -56,17 +56,17 @@ function getVersion() {
 }
 
 function printUsage() {
-  console.log(`smart-memory — Persistent per-project memory agent for opencode.
+  console.log(`jean-claude — Persistent per-project memory agent for opencode.
 
 Usage:
-  smart-memory init              Install the Jean Claude agent + memory dirs
-  smart-memory uninstall         Remove the agent (optionally its memory data)
-  smart-memory --help            Show this help
-  smart-memory --version         Show version
+  jean-claude init              Install the Jean Claude agent + memory dirs
+  jean-claude uninstall         Remove the agent (optionally its memory data)
+  jean-claude --help            Show this help
+  jean-claude --version         Show version
 
 Examples:
-  smart-memory init
-  smart-memory uninstall
+  jean-claude init
+  jean-claude uninstall
   npx github:martinpercu/opencode-claude-memory init`);
 }
 
@@ -460,7 +460,7 @@ async function runInit() {
     console.log(`  Memory dir: ${PROJDIR}/`);
     console.log(`  Restart opencode, then press Tab and select "${agentName}".`);
     console.log("  build and plan agents were NOT modified.");
-    console.log("  To uninstall later: smart-memory uninstall (or /jean-claude-uninstall inside opencode).");
+    console.log("  To uninstall later: jean-claude uninstall (or /jean-claude-uninstall inside opencode).");
     console.log("Restart opencode for changes to take effect.");
   } catch (err) {
     try {

@@ -114,7 +114,7 @@ folder on first use. Memories from project A are never visible in project B.
 From anywhere:
 
 ```bash
-smart-memory uninstall
+jean-claude uninstall
 ```
 
 It finds the agent and the `/jean-claude-uninstall` command in both scopes,
