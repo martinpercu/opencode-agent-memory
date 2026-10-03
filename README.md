@@ -1,0 +1,114 @@
+# Smart Memory
+
+Persistent per-project memory agent for [opencode](https://opencode.ai), Claude Code style.
+100% prompt + files, zero runtime dependencies.
+
+Tell the agent `remember X` once; it writes one file per fact plus a one-line
+index entry, and reads them back in later sessions — per project, automatically.
+
+## Install
+
+```bash
+npx github:martinpercu/opencode-agent-memory init
+```
+
+Requirements: Node.js >= 18, opencode installed.
+
+The CLI asks 4 questions (agent name, permission profile, global/project
+scope, optional `default_agent`), writes the files below, and prints a summary.
+Restart opencode afterwards (config loads at startup, no hot-reload), then
+press `Tab` and select your agent.
+
+## What init creates
+
+```
+~/.opencode-memory/
+  instructions.md            # master copy of the memory prompt (source for future updates)
+  -Users-you-myproject/      # slug of the project you ran init in (path with / -> -)
+    MEMORY.md                # index: one line per memory, never memory content
+    memory/                  # one file per fact, with frontmatter
+
+~/.config/opencode/agents/<name>.md   # the agent (global scope, recommended)
+# or .opencode/agents/<name>.md       # project scope, if you chose it
+```
+
+`build` and `plan` agents are NOT modified (verified: their resolved configs
+are identical with and without this agent installed).
+
+## Usage
+
+```text
+Tab → smart-memory
+> remember that tests run with pytest -x
+# (writes memory/run-tests-pytest-x.md + one line in MEMORY.md)
+
+> how do we run the tests?
+# (reads MEMORY.md, then the file, and answers)
+
+> forget about the pytest thing
+# (deletes the file and its index entry)
+```
+
+One global install works in every project: the agent derives the slug from the
+working directory each session and auto-creates that project's memory folder on
+first use. Memories from project A are never visible in project B.
+
+## How it works
+
+100% prompt + files, zero code at runtime, zero plugin in v1:
+
+- The agent file's body is the memory prompt: where memory lives
+  (`~/.opencode-memory/<slug>/`), the one-fact-per-file format with
+  `name/description/metadata.type` frontmatter, `[[links]]` between memories,
+  a lazy index (`MEMORY.md`, one line per memory, read first, file content on
+  demand), and when to read/write/forget — including verifying files still
+  exist before recommending them (stale-check).
+- The harness only guarantees folders exist; all behavior comes from the text.
+  Structure mirrors Claude Code's project memory.
+- The installer grants the agent `external_directory: allow` scoped to
+  `~/.opencode-memory` only, so memory access never prompts. Everything else
+  outside the working directory keeps opencode's default (`ask`).
+
+## Configuration
+
+- **Permission profiles** (chosen at init): `build-like` (edit/bash allow),
+  `ask-first` (edit/bash ask), `plan-like` (read-only: edit deny, bash ask).
+- **Scope:** global (`~/.config/opencode/agents/`, all projects, recommended)
+  or project (`.opencode/agents/`, this repo only).
+- **`default_agent`:** opt-in at init; edits `opencode.json` only if it parses
+  as strict JSON, otherwise prints the line to add manually.
+- Verify after install: `opencode debug agent <name>` shows the rendered
+  prompt and the profile's permissions.
+
+## Known limitations (v1)
+
+- Per-project memory only. No cross-project personal memory (planned for v2).
+- No automatic updater: re-run `init` and confirm overwrites to refresh the
+  agent text (your `MEMORY.md` and `memory/*.md` are never touched).
+- No plugin: the index is not injected at session start — the agent reads it
+  with `read` when a task calls for it.
+- Old tool outputs can be compacted away over very long sessions; the prompt
+  itself is re-rendered every request and survives compaction.
+- Portability across models is by design (pure prompt) but multi-model E2E is
+  still unverified; tested end-to-end with one local model so far.
+
+## Uninstall
+
+```bash
+rm ~/.config/opencode/agents/smart-memory.md  # or .opencode/agents/smart-memory.md
+rm -rf ~/.opencode-memory                      # only if you also want the data gone
+```
+
+opencode is left exactly as it was.
+
+## Roadmap (v2)
+
+npm publish (`npx smart-memory init`), dual personal memory, `update` command,
+real plugin (`experimental.chat.system.transform` to inject the index at t=0,
+`experimental.session.compacting` to shield memory reads from compaction).
+
+## Credits
+
+Structure inspired by Claude Code (Anthropic); behavior researched from its
+leaked system prompt and re-implemented for opencode's agent format.
+Zero dependencies, MIT licensed.
