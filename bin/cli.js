@@ -512,6 +512,11 @@ async function runUninstall() {
     path.join(HOME, ".config", "opencode", "command", "jean-claude-uninstall.md"),
     path.join(CWD, ".opencode", "commands", "jean-claude-uninstall.md"),
     path.join(CWD, ".opencode", "command", "jean-claude-uninstall.md"),
+    // legacy names (pre-0.2.0)
+    path.join(HOME, ".config", "opencode", "commands", "smart-memory-uninstall.md"),
+    path.join(HOME, ".config", "opencode", "command", "smart-memory-uninstall.md"),
+    path.join(CWD, ".opencode", "commands", "smart-memory-uninstall.md"),
+    path.join(CWD, ".opencode", "command", "smart-memory-uninstall.md"),
   ];
   const found = [...agentCandidates, ...cmdCandidates].filter((p) => {
     try {
