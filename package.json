@@ -7,6 +7,6 @@
   "files": ["bin", "templates"],
   "engines": { "node": ">=18" },
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/martinpercu/opencode-agent-memory.git" },
+  "repository": { "type": "git", "url": "git+https://github.com/martinpercu/opencode-claude-memory.git" },
   "keywords": ["opencode", "memory", "agent", "cli", "claude-code"]
 }

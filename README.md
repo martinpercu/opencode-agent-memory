@@ -9,7 +9,7 @@ index entry, and reads them back in later sessions — per project, automaticall
 ## Install
 
 ```bash
-npx github:martinpercu/opencode-agent-memory init
+npx github:martinpercu/opencode-claude-memory init
 ```
 
 Requirements: Node.js >= 18, opencode installed.

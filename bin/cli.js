@@ -67,7 +67,7 @@ Usage:
 Examples:
   smart-memory init
   smart-memory uninstall
-  npx github:martinpercu/opencode-agent-memory init`);
+  npx github:martinpercu/opencode-claude-memory init`);
 }
 
 function hasOpencodeInPath() {
