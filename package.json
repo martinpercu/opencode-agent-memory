@@ -1,6 +1,6 @@
 {
   "name": "smart-memory",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Persistent per-project memory agent for opencode, Claude Code style. 100% prompt + files, zero runtime deps.",
   "type": "module",
   "bin": { "smart-memory": "bin/cli.js" },

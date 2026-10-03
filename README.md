@@ -94,6 +94,20 @@ first use. Memories from project A are never visible in project B.
 
 ## Uninstall
 
+From anywhere:
+
+```bash
+smart-memory uninstall
+```
+
+It finds the agent and the `/smart-memory-uninstall` command in both scopes,
+asks before deleting, and asks whether to also delete the memory data in
+`~/.opencode-memory` (default: keep it, so reinstalling reuses your memories).
+Also cleans `default_agent` from `opencode.json` if it points at the agent.
+Restart opencode afterwards.
+
+Manual fallback (no CLI at hand):
+
 ```bash
 rm ~/.config/opencode/agents/smart-memory.md  # or .opencode/agents/smart-memory.md
 rm -rf ~/.opencode-memory                      # only if you also want the data gone

@@ -60,11 +60,13 @@ function printUsage() {
 
 Usage:
   smart-memory init              Install the Smart Memory agent + memory dirs
+  smart-memory uninstall         Remove the agent (optionally its memory data)
   smart-memory --help            Show this help
   smart-memory --version         Show version
 
 Examples:
   smart-memory init
+  smart-memory uninstall
   npx github:martinpercu/opencode-agent-memory init`);
 }
 
@@ -152,18 +154,27 @@ async function main() {
     console.log(getVersion());
     process.exit(0);
   }
-  if (args[0] !== "init") {
-    console.error(`Error: unknown command "${args[0]}"`);
-    printUsage();
-    process.exit(1);
+  if (args[0] === "init") {
+    try {
+      await runInit();
+    } catch (err) {
+      console.error(`Error: ${err?.message || err}`);
+      process.exit(1);
+    }
+    return;
   }
-
-  try {
-    await runInit();
-  } catch (err) {
-    console.error(`Error: ${err?.message || err}`);
-    process.exit(1);
+  if (args[0] === "uninstall") {
+    try {
+      await runUninstall();
+    } catch (err) {
+      console.error(`Error: ${err?.message || err}`);
+      process.exit(1);
+    }
+    return;
   }
+  console.error(`Error: unknown command "${args[0]}"`);
+  printUsage();
+  process.exit(1);
 }
 
 async function runInit() {
@@ -280,10 +291,13 @@ async function runInit() {
   }
 
   let AGENTFILE;
+  let CMDFILE;
   if (scope === "global") {
     AGENTFILE = path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`);
+    CMDFILE = path.join(HOME, ".config", "opencode", "commands", "smart-memory-uninstall.md");
   } else {
     AGENTFILE = path.join(CWD, ".opencode", "agents", `${agentName}.md`);
+    CMDFILE = path.join(CWD, ".opencode", "commands", "smart-memory-uninstall.md");
   }
 
   const created = [];
@@ -302,7 +316,7 @@ async function runInit() {
 
   try {
     // paso 2.1: mkdir -p
-    for (const dir of [MEMROOT, PROJDIR, MEMDIR, path.dirname(AGENTFILE)]) {
+    for (const dir of [MEMROOT, PROJDIR, MEMDIR, path.dirname(AGENTFILE), path.dirname(CMDFILE)]) {
       try {
         fs.mkdirSync(dir, { recursive: true });
       } catch (err) {
@@ -370,6 +384,26 @@ async function runInit() {
       trackWrite(AGENTFILE, rendered);
     }
 
+    // paso 2.4b: command file (uninstall from inside opencode)
+    const cmdTemplate = fs.readFileSync(
+      path.join(TEMPLATES_DIR, "command.md"),
+      "utf8"
+    );
+    if (fs.existsSync(CMDFILE)) {
+      const raw = await ask(
+        "Uninstall command already exists. Overwrite? (y/N): "
+      );
+      const parsed = parseYesNo(raw ?? "", false);
+      if (parsed === true) {
+        trackWrite(CMDFILE, cmdTemplate);
+      } else {
+        skipped.push(CMDFILE);
+        console.log("Keeping existing uninstall command.");
+      }
+    } else {
+      trackWrite(CMDFILE, cmdTemplate);
+    }
+
     // paso 2.5: default_agent
     if (setDefault) {
       const target =
@@ -426,6 +460,7 @@ async function runInit() {
     console.log(`  Memory dir: ${PROJDIR}/`);
     console.log(`  Restart opencode, then press Tab and select "${agentName}".`);
     console.log("  build and plan agents were NOT modified.");
+    console.log("  To uninstall later: smart-memory uninstall (or /smart-memory-uninstall inside opencode).");
     console.log("Restart opencode for changes to take effect.");
   } catch (err) {
     try {
@@ -450,6 +485,158 @@ async function runInit() {
     }
     process.exit(1);
   }
+}
+
+async function runUninstall() {
+  const HOME = os.homedir();
+  const CWD = process.cwd();
+  const MEMROOT = path.join(HOME, ".opencode-memory");
+
+  const prompter = createPrompter();
+  const ask = (prompt) => prompter.ask(prompt);
+  process.on("SIGINT", () => {
+    console.log("");
+    process.exit(130);
+  });
+
+  const rawName = await ask("Agent name [smart-memory]: ");
+  const agentName =
+    (rawName || "").trim() === "" ? "smart-memory" : rawName.trim();
+
+  const agentCandidates = [
+    path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`),
+    path.join(CWD, ".opencode", "agents", `${agentName}.md`),
+  ];
+  const cmdCandidates = [
+    path.join(HOME, ".config", "opencode", "commands", "smart-memory-uninstall.md"),
+    path.join(HOME, ".config", "opencode", "command", "smart-memory-uninstall.md"),
+    path.join(CWD, ".opencode", "commands", "smart-memory-uninstall.md"),
+    path.join(CWD, ".opencode", "command", "smart-memory-uninstall.md"),
+  ];
+  const found = [...agentCandidates, ...cmdCandidates].filter((p) => {
+    try {
+      return fs.existsSync(p);
+    } catch {
+      return false;
+    }
+  });
+
+  const removed = [];
+  const kept = [];
+  const failed = [];
+
+  if (found.length === 0) {
+    console.log(`Smart Memory (${agentName}) is not installed. Nothing to do.`);
+    prompter.close();
+    return;
+  }
+
+  console.log("Installed files:");
+  for (const p of found) console.log(`  - ${p}`);
+
+  let doRemove = true;
+  while (true) {
+    const raw = await ask("Remove these files? (Y/n): ");
+    const parsed = parseYesNo(raw ?? "", true);
+    if (parsed === null) {
+      console.log("Please answer Y or n.");
+      continue;
+    }
+    doRemove = parsed;
+    break;
+  }
+  if (doRemove) {
+    for (const p of found) {
+      try {
+        fs.unlinkSync(p);
+        removed.push(p);
+      } catch {
+        failed.push(p);
+      }
+    }
+  } else {
+    for (const p of found) kept.push(p);
+  }
+
+  if (fs.existsSync(MEMROOT)) {
+    let removeData = false;
+    while (true) {
+      const raw = await ask(`Remove memory data in ${MEMROOT}? (y/N): `);
+      const parsed = parseYesNo(raw ?? "", false);
+      if (parsed === null) {
+        console.log("Please answer y or N.");
+        continue;
+      }
+      removeData = parsed;
+      break;
+    }
+    if (removeData) {
+      try {
+        fs.rmSync(MEMROOT, { recursive: true, force: true });
+        removed.push(MEMROOT);
+      } catch {
+        failed.push(MEMROOT);
+      }
+    } else {
+      kept.push(MEMROOT);
+      console.log("Keeping memory data (reinstall later to reuse it).");
+    }
+  }
+
+  for (const target of [
+    path.join(CWD, "opencode.json"),
+    path.join(HOME, ".config", "opencode", "opencode.json"),
+  ]) {
+    let obj = null;
+    try {
+      if (!fs.existsSync(target)) continue;
+      obj = JSON.parse(fs.readFileSync(target, "utf8"));
+    } catch {
+      continue;
+    }
+    if (obj && obj.default_agent === agentName) {
+      let yes = false;
+      while (true) {
+        const raw = await ask(`Remove "default_agent" from ${target}? (y/N): `);
+        const parsed = parseYesNo(raw ?? "", false);
+        if (parsed === null) {
+          console.log("Please answer y or N.");
+          continue;
+        }
+        yes = parsed;
+        break;
+      }
+      if (yes) {
+        try {
+          delete obj.default_agent;
+          fs.writeFileSync(target, JSON.stringify(obj, null, 2) + "\n", "utf8");
+          removed.push(`${target} (default_agent key)`);
+        } catch {
+          failed.push(target);
+        }
+      } else {
+        kept.push(target);
+      }
+    }
+  }
+
+  prompter.close();
+
+  console.log("✓ Smart Memory uninstalled.");
+  if (removed.length > 0) {
+    console.log("Removed:");
+    for (const p of removed) console.log(`  - ${p}`);
+  }
+  if (kept.length > 0) {
+    console.log("Kept:");
+    for (const p of kept) console.log(`  - ${p}`);
+  }
+  if (failed.length > 0) {
+    console.log("Failed (check permissions):");
+    for (const p of failed) console.log(`  ! ${p}`);
+    process.exit(1);
+  }
+  console.log("Restart opencode for changes to take effect.");
 }
 
 await main();
