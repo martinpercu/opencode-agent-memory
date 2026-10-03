@@ -1,8 +1,8 @@
 ---
-description: Uninstall the Smart Memory agent and optionally its memory data.
+description: Uninstall the Jean Claude agent and optionally its memory data.
 ---
 
-Uninstall Smart Memory by running its CLI uninstaller and reporting the result.
+Uninstall Jean Claude by running its CLI uninstaller and reporting the result.
 
 1. Execute via `bash`: `smart-memory uninstall` and follow its prompts
    (it asks which agent, confirms file removal, and asks whether to also

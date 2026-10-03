@@ -1,10 +1,25 @@
-# Smart Memory
+# Jean Claude
 
-Persistent per-project memory agent for [opencode](https://opencode.ai), Claude Code style.
-100% prompt + files, zero runtime dependencies.
+```text
+_                   ____  _                     _
+    | | ___  __ _ _ __  / ___|| | __ _ _   _  __| | ___| |
+ _  | |/ _ \/ _` | '_ \| |    | |/ _` | | | |/ _` |/ _ \ |
+| |_| |  __/ (_| | | | | |___ | | (_| | |_| | (_| |  __/_|
+ \___/ \___|\__,_|_| |_|\____|_|\__,_|\__,_|\__,_|\___(_)
+```
 
-Tell the agent `remember X` once; it writes one file per fact plus a one-line
-index entry, and reads them back in later sessions — per project, automatically.
+**Roundhouse kick your agent's amnesia.**
+
+*Split-legged context retention for OpenCode.*
+
+> "El agente de OpenCode que nunca olvida dónde dejó los bugs."
+
+Jean Claude is a persistent per-project memory agent for
+[opencode](https://opencode.ai), Claude Code style. 100% prompt + files, zero
+runtime dependencies.
+
+Tell him `remember X` once; he writes one file per fact plus a one-line index
+entry, and reads them back in later sessions — per project, automatically.
 
 ## Install
 
@@ -14,10 +29,10 @@ npx github:martinpercu/opencode-claude-memory init
 
 Requirements: Node.js >= 18, opencode installed.
 
-The CLI asks 4 questions (agent name, permission profile, global/project
-scope, optional `default_agent`), writes the files below, and prints a summary.
-Restart opencode afterwards (config loads at startup, no hot-reload), then
-press `Tab` and select your agent.
+The CLI asks 4 questions (agent name — default `jean-claude`, permission
+profile, global/project scope, optional `default_agent`), writes the files
+below, and prints a summary. Restart opencode afterwards (config loads at
+startup, no hot-reload), then press `Tab` and select Jean Claude.
 
 ## What init creates
 
@@ -28,8 +43,9 @@ press `Tab` and select your agent.
     MEMORY.md                # index: one line per memory, never memory content
     memory/                  # one file per fact, with frontmatter
 
-~/.config/opencode/agents/<name>.md   # the agent (global scope, recommended)
-# or .opencode/agents/<name>.md       # project scope, if you chose it
+~/.config/opencode/agents/jean-claude.md      # the agent (global scope, recommended)
+~/.config/opencode/commands/jean-claude-uninstall.md  # /jean-claude-uninstall inside opencode
+# or .opencode/agents/ + .opencode/commands/  # project scope, if you chose it
 ```
 
 `build` and `plan` agents are NOT modified (verified: their resolved configs
@@ -38,7 +54,7 @@ are identical with and without this agent installed).
 ## Usage
 
 ```text
-Tab → smart-memory
+Tab → jean-claude
 > remember that tests run with pytest -x
 # (writes memory/run-tests-pytest-x.md + one line in MEMORY.md)
 
@@ -49,9 +65,9 @@ Tab → smart-memory
 # (deletes the file and its index entry)
 ```
 
-One global install works in every project: the agent derives the slug from the
-working directory each session and auto-creates that project's memory folder on
-first use. Memories from project A are never visible in project B.
+One global install works in every project: Jean Claude derives the slug from
+the working directory each session and auto-creates that project's memory
+folder on first use. Memories from project A are never visible in project B.
 
 ## How it works
 
@@ -77,7 +93,7 @@ first use. Memories from project A are never visible in project B.
   or project (`.opencode/agents/`, this repo only).
 - **`default_agent`:** opt-in at init; edits `opencode.json` only if it parses
   as strict JSON, otherwise prints the line to add manually.
-- Verify after install: `opencode debug agent <name>` shows the rendered
+- Verify after install: `opencode debug agent jean-claude` shows the rendered
   prompt and the profile's permissions.
 
 ## Known limitations (v1)
@@ -100,25 +116,26 @@ From anywhere:
 smart-memory uninstall
 ```
 
-It finds the agent and the `/smart-memory-uninstall` command in both scopes,
+It finds the agent and the `/jean-claude-uninstall` command in both scopes,
 asks before deleting, and asks whether to also delete the memory data in
 `~/.opencode-memory` (default: keep it, so reinstalling reuses your memories).
 Also cleans `default_agent` from `opencode.json` if it points at the agent.
-Restart opencode afterwards.
+Restart opencode afterwards. Inside opencode you can also run
+`/jean-claude-uninstall`.
 
 Manual fallback (no CLI at hand):
 
 ```bash
-rm ~/.config/opencode/agents/smart-memory.md  # or .opencode/agents/smart-memory.md
-rm -rf ~/.opencode-memory                      # only if you also want the data gone
+rm ~/.config/opencode/agents/jean-claude.md  # or .opencode/agents/jean-claude.md
+rm -rf ~/.opencode-memory                    # only if you also want the data gone
 ```
 
 opencode is left exactly as it was.
 
 ## Roadmap (v2)
 
-npm publish (`npx smart-memory init`), dual personal memory, `update` command,
-real plugin (`experimental.chat.system.transform` to inject the index at t=0,
+npm publish, dual personal memory, `update` command, real plugin
+(`experimental.chat.system.transform` to inject the index at t=0,
 `experimental.session.compacting` to shield memory reads from compaction).
 
 ## Credits

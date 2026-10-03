@@ -25,21 +25,21 @@ const PROFILES = {
   "1": {
     key: "build-like",
     description:
-      "Build agent with persistent per-project memory (Smart Memory). Full tool access.",
+      "Build agent with persistent per-project memory (Jean Claude). Full tool access.",
     permissionBlock:
       "permission:\n  edit: allow\n  bash: allow\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow",
   },
   "2": {
     key: "ask-first",
     description:
-      "Agent with persistent per-project memory (Smart Memory). Asks before edits and shell commands.",
+      "Agent with persistent per-project memory (Jean Claude). Asks before edits and shell commands.",
     permissionBlock:
       "permission:\n  edit: ask\n  bash: ask\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow",
   },
   "3": {
     key: "plan-like",
     description:
-      "Read-only planning agent with persistent per-project memory (Smart Memory).",
+      "Read-only planning agent with persistent per-project memory (Jean Claude).",
     permissionBlock:
       "permission:\n  edit: deny\n  bash: ask\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow",
   },
@@ -59,7 +59,7 @@ function printUsage() {
   console.log(`smart-memory — Persistent per-project memory agent for opencode.
 
 Usage:
-  smart-memory init              Install the Smart Memory agent + memory dirs
+  smart-memory init              Install the Jean Claude agent + memory dirs
   smart-memory uninstall         Remove the agent (optionally its memory data)
   smart-memory --help            Show this help
   smart-memory --version         Show version
@@ -217,8 +217,8 @@ async function runInit() {
   // paso 1: preguntas
   let agentName = "";
   while (true) {
-    const raw = await ask("Agent name [smart-memory]: ");
-    const name = (raw || "").trim() === "" ? "smart-memory" : raw.trim();
+    const raw = await ask("Agent name [jean-claude]: ");
+    const name = (raw || "").trim() === "" ? "jean-claude" : raw.trim();
     if (name === "") {
       console.log("Name cannot be empty.");
       continue;
@@ -294,10 +294,10 @@ async function runInit() {
   let CMDFILE;
   if (scope === "global") {
     AGENTFILE = path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`);
-    CMDFILE = path.join(HOME, ".config", "opencode", "commands", "smart-memory-uninstall.md");
+    CMDFILE = path.join(HOME, ".config", "opencode", "commands", "jean-claude-uninstall.md");
   } else {
     AGENTFILE = path.join(CWD, ".opencode", "agents", `${agentName}.md`);
-    CMDFILE = path.join(CWD, ".opencode", "commands", "smart-memory-uninstall.md");
+    CMDFILE = path.join(CWD, ".opencode", "commands", "jean-claude-uninstall.md");
   }
 
   const created = [];
@@ -455,12 +455,12 @@ async function runInit() {
 
     // paso 2.6: resumen final (formato §1) + recordatorio
     const scopeLabel = scope === "global" ? "global" : "project";
-    console.log("✓ Smart Memory installed.");
+    console.log("✓ Jean Claude installed.");
     console.log(`  Agent: ${agentName} (${scopeLabel} scope, ${profile.key} permissions)`);
     console.log(`  Memory dir: ${PROJDIR}/`);
     console.log(`  Restart opencode, then press Tab and select "${agentName}".`);
     console.log("  build and plan agents were NOT modified.");
-    console.log("  To uninstall later: smart-memory uninstall (or /smart-memory-uninstall inside opencode).");
+    console.log("  To uninstall later: smart-memory uninstall (or /jean-claude-uninstall inside opencode).");
     console.log("Restart opencode for changes to take effect.");
   } catch (err) {
     try {
@@ -499,19 +499,19 @@ async function runUninstall() {
     process.exit(130);
   });
 
-  const rawName = await ask("Agent name [smart-memory]: ");
+  const rawName = await ask("Agent name [jean-claude]: ");
   const agentName =
-    (rawName || "").trim() === "" ? "smart-memory" : rawName.trim();
+    (rawName || "").trim() === "" ? "jean-claude" : rawName.trim();
 
   const agentCandidates = [
     path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`),
     path.join(CWD, ".opencode", "agents", `${agentName}.md`),
   ];
   const cmdCandidates = [
-    path.join(HOME, ".config", "opencode", "commands", "smart-memory-uninstall.md"),
-    path.join(HOME, ".config", "opencode", "command", "smart-memory-uninstall.md"),
-    path.join(CWD, ".opencode", "commands", "smart-memory-uninstall.md"),
-    path.join(CWD, ".opencode", "command", "smart-memory-uninstall.md"),
+    path.join(HOME, ".config", "opencode", "commands", "jean-claude-uninstall.md"),
+    path.join(HOME, ".config", "opencode", "command", "jean-claude-uninstall.md"),
+    path.join(CWD, ".opencode", "commands", "jean-claude-uninstall.md"),
+    path.join(CWD, ".opencode", "command", "jean-claude-uninstall.md"),
   ];
   const found = [...agentCandidates, ...cmdCandidates].filter((p) => {
     try {
@@ -526,7 +526,7 @@ async function runUninstall() {
   const failed = [];
 
   if (found.length === 0) {
-    console.log(`Smart Memory (${agentName}) is not installed. Nothing to do.`);
+    console.log(`Jean Claude (${agentName}) is not installed. Nothing to do.`);
     prompter.close();
     return;
   }
@@ -622,7 +622,7 @@ async function runUninstall() {
 
   prompter.close();
 
-  console.log("✓ Smart Memory uninstalled.");
+  console.log("✓ Jean Claude uninstalled.");
   if (removed.length > 0) {
     console.log("Removed:");
     for (const p of removed) console.log(`  - ${p}`);
