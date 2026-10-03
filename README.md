@@ -105,8 +105,9 @@ folder on first use. Memories from project A are never visible in project B.
   with `read` when a task calls for it.
 - Old tool outputs can be compacted away over very long sessions; the prompt
   itself is re-rendered every request and survives compaction.
-- Portability across models is by design (pure prompt) but multi-model E2E is
-  still unverified; tested end-to-end with one local model so far.
+- Portability across models is by design (pure prompt) and verified end to
+  end: a fact written by one model (local Qwen) was correctly recalled by a
+  different model (Muse Spark) in a new session.
 
 ## Uninstall
 
