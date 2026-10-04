@@ -11,16 +11,6 @@ const __dirname = path.dirname(__filename);
 const TEMPLATES_DIR = path.resolve(__dirname, "../templates");
 const PACKAGE_JSON_PATH = path.resolve(__dirname, "../package.json");
 
-const RESERVED_NAMES = new Set([
-  "build",
-  "plan",
-  "general",
-  "explore",
-  "compaction",
-  "title",
-  "summary",
-]);
-
 const PROFILES = {
   "1": {
     key: "build-like",
@@ -214,26 +204,29 @@ async function runInit() {
     process.exit(130);
   });
 
-  // paso 1: preguntas
-  let agentName = "";
-  while (true) {
-    const raw = await ask("Agent name [jean-claude]: ");
-    const name = (raw || "").trim() === "" ? "jean-claude" : raw.trim();
-    if (name === "") {
-      console.log("Name cannot be empty.");
-      continue;
-    }
-    if (!/^[a-z0-9-]+$/.test(name)) {
-      console.log("Invalid name. Use only [a-z0-9-].");
-      continue;
-    }
-    if (RESERVED_NAMES.has(name)) {
-      console.log("that name is reserved by opencode");
-      continue;
-    }
-    agentName = name;
-    break;
-  }
+  console.log(`
+     _                   ____  _                 _         _ 
+    | | ___  __ _ _ __  / ___|| | __ _ _   _  __| | ___   | |
+ _  | |/ _ \\/ _\` | '_ \\| |    | |/ _\` | | | |/ _\` |/ _ \\  | |
+| |_| |  __/ (_| | | | | |___ | | (_| | |_| | (_| |  __/  |_|
+ \\___/ \\___|\\__,_|_| |_|\\____||_|\\__,_|\\__,_|\\__,_|\\___   (_)
+`);
+  console.log("Roundhouse kick your agent's amnesia.");
+  console.log("");
+  console.log("This installs Jean Claude, a persistent per-project memory");
+  console.log("agent for opencode (100% prompt + files, zero dependencies):");
+  console.log(`  - Agent file:  ~/.config/opencode/agents/jean-claude.md`);
+  console.log(`  - Uninstall command: ~/.config/opencode/commands/jean-claude-uninstall.md`);
+  console.log(`  - Memory master: ${MEMROOT}/instructions.md (always refreshed)`);
+  console.log(`  - This project's memory: ${PROJDIR}/MEMORY.md + memory/`);
+  console.log(`  - Sets "default_agent": "jean-claude" in your global opencode.json`);
+  console.log(`  - build and plan agents are NOT modified.`);
+  console.log("");
+
+  // paso 1: única pregunta (perfil). Todo lo demás es fijo:
+  // agent jean-claude, scope global, default_agent siempre, master siempre.
+  const agentName = "jean-claude";
+  const scope = "global";
 
   let profile = null;
   while (true) {
@@ -256,49 +249,10 @@ async function runInit() {
     console.log("Invalid choice. Enter 1, 2 or 3.");
   }
 
-  let scope = "global";
-  while (true) {
-    console.log("Install agent for:");
-    console.log(
-      "1) global (~/.config/opencode/agents/) — all your projects (recommended)"
-    );
-    console.log("2) this project (.opencode/agents/)    — only this repo");
-    const raw = await ask("Choose [1]: ");
-    const choice = (raw || "").trim() === "" ? "1" : raw.trim();
-    if (choice === "1") {
-      scope = "global";
-      break;
-    }
-    if (choice === "2") {
-      scope = "project";
-      break;
-    }
-    console.log("Invalid choice. Enter 1 or 2.");
-  }
-
-  let setDefault = false;
-  while (true) {
-    const raw = await ask(
-      "Set as default_agent in opencode.json? (y/N): "
-    );
-    const parsed = parseYesNo(raw ?? "", false);
-    if (parsed === null) {
-      console.log('Please answer y or N.');
-      continue;
-    }
-    setDefault = parsed;
-    break;
-  }
-
   let AGENTFILE;
   let CMDFILE;
-  if (scope === "global") {
-    AGENTFILE = path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`);
-    CMDFILE = path.join(HOME, ".config", "opencode", "commands", "jean-claude-uninstall.md");
-  } else {
-    AGENTFILE = path.join(CWD, ".opencode", "agents", `${agentName}.md`);
-    CMDFILE = path.join(CWD, ".opencode", "commands", "jean-claude-uninstall.md");
-  }
+  AGENTFILE = path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`);
+  CMDFILE = path.join(HOME, ".config", "opencode", "commands", "jean-claude-uninstall.md");
 
   const created = [];
   const skipped = [];
@@ -325,25 +279,12 @@ async function runInit() {
       }
     }
 
-    // paso 2.2: MASTER verbatim
+    // paso 2.2: MASTER verbatim, siempre se pisa (es nuestro, no datos)
     const masterTemplate = fs.readFileSync(
       path.join(TEMPLATES_DIR, "instructions.md"),
       "utf8"
     );
-    if (fs.existsSync(MASTER)) {
-      const raw = await ask(
-        "instructions.md already exists. Overwrite? (y/N): "
-      );
-      const parsed = parseYesNo(raw ?? "", false);
-      if (parsed === true) {
-        trackWrite(MASTER, masterTemplate);
-      } else {
-        skipped.push(MASTER);
-        console.log("Keeping existing instructions.md.");
-      }
-    } else {
-      trackWrite(MASTER, masterTemplate);
-    }
+    trackWrite(MASTER, masterTemplate);
 
     // paso 2.3: INDEX — nunca tocar si existe
     if (fs.existsSync(INDEX)) {
@@ -404,12 +345,9 @@ async function runInit() {
       trackWrite(CMDFILE, cmdTemplate);
     }
 
-    // paso 2.5: default_agent
-    if (setDefault) {
-      const target =
-        scope === "project"
-          ? path.join(CWD, "opencode.json")
-          : path.join(HOME, ".config", "opencode", "opencode.json");
+    // paso 2.5: default_agent, siempre (global)
+    {
+      const target = path.join(HOME, ".config", "opencode", "opencode.json");
       try {
         fs.mkdirSync(path.dirname(target), { recursive: true });
       } catch {

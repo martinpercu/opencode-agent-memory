@@ -29,10 +29,10 @@ npx github:martinpercu/opencode-claude-memory init
 
 Requirements: Node.js >= 18, opencode installed.
 
-The CLI asks 4 questions (agent name — default `jean-claude`, permission
-profile, global/project scope, optional `default_agent`), writes the files
-below, and prints a summary. Restart opencode afterwards (config loads at
-startup, no hot-reload), then press `Tab` and select Jean Claude.
+The CLI shows what it will install, asks one question (permission profile),
+and does the rest automatically: agent `jean-claude`, global scope, sets it
+as `default_agent`, and refreshes the memory master. Restart opencode
+afterwards (config loads at startup, no hot-reload).
 
 ## What init creates
 
@@ -43,9 +43,8 @@ startup, no hot-reload), then press `Tab` and select Jean Claude.
     MEMORY.md                # index: one line per memory, never memory content
     memory/                  # one file per fact, with frontmatter
 
-~/.config/opencode/agents/jean-claude.md      # the agent (global scope, recommended)
+~/.config/opencode/agents/jean-claude.md      # the agent (always global)
 ~/.config/opencode/commands/jean-claude-uninstall.md  # /jean-claude-uninstall inside opencode
-# or .opencode/agents/ + .opencode/commands/  # project scope, if you chose it
 ```
 
 `build` and `plan` agents are NOT modified (verified: their resolved configs
@@ -89,8 +88,8 @@ folder on first use. Memories from project A are never visible in project B.
 
 - **Permission profiles** (chosen at init): `build-like` (edit/bash allow),
   `ask-first` (edit/bash ask), `plan-like` (read-only: edit deny, bash ask).
-- **Scope:** global (`~/.config/opencode/agents/`, all projects, recommended)
-  or project (`.opencode/agents/`, this repo only).
+- **Scope:** always global (`~/.config/opencode/agents/`) — one install serves
+  all projects.
 - **`default_agent`:** opt-in at init; edits `opencode.json` only if it parses
   as strict JSON, otherwise prints the line to add manually.
 - Verify after install: `opencode debug agent jean-claude` shows the rendered
