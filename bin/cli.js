@@ -205,13 +205,15 @@ async function runInit() {
   });
 
   console.log(`
-     _                   ____  _                 _         _ 
-    | | ___  __ _ _ __  / ___|| | __ _ _   _  __| | ___   | |
- _  | |/ _ \\/ _\` | '_ \\| |    | |/ _\` | | | |/ _\` |/ _ \\  | |
-| |_| |  __/ (_| | | | | |___ | | (_| | |_| | (_| |  __/  |_|
- \\___/ \\___|\\__,_|_| |_|\\____||_|\\__,_|\\__,_|\\__,_|\\___   (_)
+     _                     ____  _                 _         _ 
+    | | ___  __ _ _ __    / ___|| | __ _ _   _  __| | ___   | |
+ _  | |/ _ \\/ _\` | '_ \\  | |    | |/ _\` | | | |/ _\` |/ _ \\  | |
+| |_| |  __/ (_| | | | | | |___ | | (_| | |_| | (_| |  __/  |_|
+ \\___/ \\___|\\__,_|_| |_|  \\____||_|\\__,_|\\__,_|\\__,_|\\___|  (_)
 `);
+  console.log("");
   console.log("Roundhouse kick your agent's amnesia.");
+  console.log("");
   console.log("");
   console.log("This installs Jean Claude, a persistent per-project memory");
   console.log("agent for opencode (100% prompt + files, zero dependencies):");
@@ -437,9 +439,12 @@ async function runUninstall() {
     process.exit(130);
   });
 
-  const rawName = await ask("Agent name [jean-claude]: ");
-  const agentName =
-    (rawName || "").trim() === "" ? "jean-claude" : rawName.trim();
+  console.log("This uninstaller removes the Jean Claude agent and its memory");
+  console.log("from opencode (agent file, uninstall command, memory data, and");
+  console.log("the default_agent key if it points at Jean Claude).");
+  console.log("");
+
+  const agentName = "jean-claude";
 
   const agentCandidates = [
     path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`),
@@ -465,64 +470,47 @@ async function runUninstall() {
   });
 
   const removed = [];
-  const kept = [];
   const failed = [];
 
-  if (found.length === 0) {
-    console.log(`Jean Claude (${agentName}) is not installed. Nothing to do.`);
+  const hasData = fs.existsSync(MEMROOT);
+  if (found.length === 0 && !hasData) {
+    console.log("Jean Claude is not installed. Nothing to do.");
     prompter.close();
     return;
   }
 
-  console.log("Installed files:");
-  for (const p of found) console.log(`  - ${p}`);
-
-  let doRemove = true;
+  let yes = false;
   while (true) {
-    const raw = await ask("Remove these files? (Y/n): ");
-    const parsed = parseYesNo(raw ?? "", true);
+    const raw = await ask("Uninstall Jean Claude? (y/N): ");
+    const parsed = parseYesNo(raw ?? "", false);
     if (parsed === null) {
-      console.log("Please answer Y or n.");
+      console.log("Please answer y or N.");
       continue;
     }
-    doRemove = parsed;
+    yes = parsed;
     break;
   }
-  if (doRemove) {
-    for (const p of found) {
-      try {
-        fs.unlinkSync(p);
-        removed.push(p);
-      } catch {
-        failed.push(p);
-      }
-    }
-  } else {
-    for (const p of found) kept.push(p);
+  if (!yes) {
+    console.log("Nothing to do.");
+    prompter.close();
+    return;
   }
 
-  if (fs.existsSync(MEMROOT)) {
-    let removeData = false;
-    while (true) {
-      const raw = await ask(`Remove memory data in ${MEMROOT}? (y/N): `);
-      const parsed = parseYesNo(raw ?? "", false);
-      if (parsed === null) {
-        console.log("Please answer y or N.");
-        continue;
-      }
-      removeData = parsed;
-      break;
+  for (const p of found) {
+    try {
+      fs.unlinkSync(p);
+      removed.push(p);
+    } catch {
+      failed.push(p);
     }
-    if (removeData) {
-      try {
-        fs.rmSync(MEMROOT, { recursive: true, force: true });
-        removed.push(MEMROOT);
-      } catch {
-        failed.push(MEMROOT);
-      }
-    } else {
-      kept.push(MEMROOT);
-      console.log("Keeping memory data (reinstall later to reuse it).");
+  }
+
+  if (hasData) {
+    try {
+      fs.rmSync(MEMROOT, { recursive: true, force: true });
+      removed.push(MEMROOT);
+    } catch {
+      failed.push(MEMROOT);
     }
   }
 
@@ -538,27 +526,12 @@ async function runUninstall() {
       continue;
     }
     if (obj && obj.default_agent === agentName) {
-      let yes = false;
-      while (true) {
-        const raw = await ask(`Remove "default_agent" from ${target}? (y/N): `);
-        const parsed = parseYesNo(raw ?? "", false);
-        if (parsed === null) {
-          console.log("Please answer y or N.");
-          continue;
-        }
-        yes = parsed;
-        break;
-      }
-      if (yes) {
-        try {
-          delete obj.default_agent;
-          fs.writeFileSync(target, JSON.stringify(obj, null, 2) + "\n", "utf8");
-          removed.push(`${target} (default_agent key)`);
-        } catch {
-          failed.push(target);
-        }
-      } else {
-        kept.push(target);
+      try {
+        delete obj.default_agent;
+        fs.writeFileSync(target, JSON.stringify(obj, null, 2) + "\n", "utf8");
+        removed.push(`${target} (default_agent key)`);
+      } catch {
+        failed.push(target);
       }
     }
   }
@@ -570,15 +543,12 @@ async function runUninstall() {
     console.log("Removed:");
     for (const p of removed) console.log(`  - ${p}`);
   }
-  if (kept.length > 0) {
-    console.log("Kept:");
-    for (const p of kept) console.log(`  - ${p}`);
-  }
   if (failed.length > 0) {
     console.log("Failed (check permissions):");
     for (const p of failed) console.log(`  ! ${p}`);
     process.exit(1);
   }
+  console.log("opencode is now exactly as it was before Jean Claude was installed.");
   console.log("Restart opencode for changes to take effect.");
 }
 

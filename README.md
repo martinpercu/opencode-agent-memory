@@ -1,11 +1,11 @@
 # Jean Claude
 
 ```text
-     _                   ____  _                 _         _ 
-    | | ___  __ _ _ __  / ___|| | __ _ _   _  __| | ___   | |
- _  | |/ _ \/ _` | '_ \| |    | |/ _` | | | |/ _` |/ _ \  | |
-| |_| |  __/ (_| | | | | |___ | | (_| | |_| | (_| |  __/  |_|
- \___/ \___|\__,_|_| |_|\____||_|\__,_|\__,_|\__,_|\___   (_)
+     _                     ____  _                 _         _ 
+    | | ___  __ _ _ __    / ___|| | __ _ _   _  __| | ___   | |
+ _  | |/ _ \/ _` | '_ \  | |    | |/ _` | | | |/ _` |/ _ \  | |
+| |_| |  __/ (_| | | | | | |___ | | (_| | |_| | (_| |  __/  |_|
+ \___/ \___|\__,_|_| |_|  \____||_|\__,_|\__,_|\__,_|\___|  (_)
 ```
 
 **Roundhouse kick your agent's amnesia.**
@@ -116,10 +116,9 @@ From anywhere:
 jean-claude uninstall
 ```
 
-It finds the agent and the `/jean-claude-uninstall` command in both scopes,
-asks before deleting, and asks whether to also delete the memory data in
-`~/.opencode-memory` (default: keep it, so reinstalling reuses your memories).
-Also cleans `default_agent` from `opencode.json` if it points at the agent.
+It tells you what it removes (agent, command, memory data, `default_agent`
+key), asks one confirmation — "no" leaves everything untouched — and on
+"yes" removes it all, leaving opencode exactly as it was before Jean Claude.
 Restart opencode afterwards. Inside opencode you can also run
 `/jean-claude-uninstall`.
 
