@@ -10,12 +10,6 @@
 
 **Roundhouse kick your agent's amnesia.**
 
- _                   ____  _                 _         _ 
-    | | ___  __ _ _ __  / ___|| | __ _ _   _  __| | ___   | |
- _  | |/ _ \/ _` | '_ \| |    | |/ _` | | | |/ _` |/ _ \  | |
-| |_| |  __/ (_| | | | | |___ | | (_| | |_| | (_| |  __/  |_|
- \___/ \___|\__,_|_| |_|\____||_|\__,_|\__,_|\__,_|\___   (_)
-
 *Split-legged context retention for OpenCode.*
 
 > "El agente de OpenCode que nunca olvida dónde dejó los bugs."
