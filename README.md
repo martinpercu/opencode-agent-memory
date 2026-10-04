@@ -27,6 +27,10 @@ entry, and reads them back in later sessions — per project, automatically.
 npx github:martinpercu/opencode-claude-memory init
 ```
 
+Tip: `npx -y ...` skips the download confirmation. If you don't see the
+ASCII banner, clear the npx cache (`npx clear-npx-cache`) and retry — npx
+may be running a cached copy.
+
 Requirements: Node.js >= 18, opencode installed.
 
 The CLI shows what it will install, asks one question (permission profile),
