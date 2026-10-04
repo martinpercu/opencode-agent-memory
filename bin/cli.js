@@ -205,14 +205,10 @@ async function runInit() {
   });
 
   console.log("");
-  console.log(`
-_                   ____  _                     _
-    | | ___  __ _ _ __  / ___|| | __ _ _   _  __| | ___| |
- _  | |/ _ \\/ _\` | '_ \\| |    | |/ _\` | | | |/ _\` |/ _ \\ |
-| |_| |  __/ (_| | | | | |___ | | (_| | |_| | (_| |  __/_|
- \\___/ \\___|\\__,_|_| |_|\\____|_|\\__,_|\\__,_|\\__,_|\\___(_)
-`);
-  console.log("Roundhouse kick your agent's amnesia.");
+  console.log("+==================================================+");
+  console.log("|  JEAN CLAUDE                                     |");
+  console.log("|  Roundhouse kick your agent's amnesia.           |");
+  console.log("+==================================================+");
   console.log("");
   console.log("");
   console.log("This installs Jean Claude, a persistent per-project memory");
