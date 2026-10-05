@@ -359,15 +359,8 @@ async function runInit() {
 
     prompter.close();
 
-    // paso 2.6: resumen final (formato §1) + recordatorio
-    const scopeLabel = scope === "global" ? "global" : "project";
     console.log("✓ Jean Claude installed.");
-    console.log(`  Agent: ${agentName} (${scopeLabel} scope, ${profile.key} permissions)`);
-    console.log(`  Memory dir: ${PROJDIR}/`);
-    console.log(`  Restart opencode, then press Tab and select "${agentName}".`);
-    console.log("  build and plan agents were NOT modified.");
-    console.log("  To uninstall later: jean-claude uninstall (or /jean-claude-uninstall inside opencode).");
-    console.log("Restart opencode for changes to take effect.");
+    console.log(`  Restart opencode to select "Jean Claude".`);
   } catch (err) {
     try {
       prompter.close();
