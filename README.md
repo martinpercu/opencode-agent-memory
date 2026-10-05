@@ -126,12 +126,15 @@ key), asks one confirmation — "no" leaves everything untouched — and on
 Restart opencode afterwards. Inside opencode you can also run
 `/jean-claude-uninstall`.
 
-Manual fallback (no CLI at hand):
+Manual fallback (no CLI at hand) — all four steps:
 
 ```bash
-rm ~/.config/opencode/agents/jean-claude.md  # or .opencode/agents/jean-claude.md
-rm -rf ~/.opencode-memory                    # only if you also want the data gone
+rm ~/.config/opencode/agents/jean-claude.md        # the agent
+rm ~/.config/opencode/commands/jean-claude-uninstall.md  # the command
+rm -rf ~/.opencode-memory                          # memory data
 ```
+
+Then remove `"default_agent": "jean-claude"` from `opencode.json` if present.
 
 opencode is left exactly as it was.
 
