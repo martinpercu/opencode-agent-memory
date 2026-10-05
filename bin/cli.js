@@ -204,6 +204,13 @@ async function runInit() {
     process.exit(130);
   });
 
+  console.log(`
+     _                     ____  _                 _         _ 
+    | | ___  __ _ _ __    / ___|| | __ _ _   _  __| | ___   | |
+ _  | |/ _ \\/ _\` | '_ \\  | |    | |/ _\` | | | |/ _\` |/ _ \\  | |
+| |_| |  __/ (_| | | | | | |___ | | (_| | |_| | (_| |  __/  |_|
+ \\___/ \\___|\\__,_|_| |_|  \\____||_|\\__,_|\\__,_|\\__,_|\\___|  (_)
+`);
   console.log("🥋 About to install Jean Claude for OpenCode...");
   console.log("");
   console.log("This will set up:");
