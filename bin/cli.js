@@ -204,51 +204,36 @@ async function runInit() {
     process.exit(130);
   });
 
+  console.log("🥋 About to install Jean Claude for OpenCode...");
   console.log("");
-  console.log(`
-     _                     ____  _                 _         _ 
-    | | ___  __ _ _ __    / ___|| | __ _ _   _  __| | ___   | |
- _  | |/ _ \\/ _\` | '_ \\  | |    | |/ _\` | | | |/ _\` |/ _ \\  | |
-| |_| |  __/ (_| | | | | | |___ | | (_| | |_| | (_| |  __/  |_|
- \\___/ \\___|\\__,_|_| |_|  \\____||_|\\__,_|\\__,_|\\__,_|\\___|  (_)
-`);
-  console.log("");
-  console.log("");
-  console.log("This installs Jean Claude, a persistent per-project memory");
-  console.log("agent for opencode (100% prompt + files, zero dependencies):");
-  console.log(`  - Agent file:  ~/.config/opencode/agents/jean-claude.md`);
-  console.log(`  - Uninstall command: ~/.config/opencode/commands/jean-claude-uninstall.md`);
-  console.log(`  - Memory master: ${MEMROOT}/instructions.md (always refreshed)`);
-  console.log(`  - This project's memory: ${PROJDIR}/MEMORY.md + memory/`);
-  console.log(`  - Sets "default_agent": "jean-claude" in your global opencode.json`);
-  console.log(`  - build and plan agents are NOT modified.`);
+  console.log("This will set up:");
+  console.log("  • Agent: 'Jean Claude' registered in OpenCode");
+  console.log("  • Memory Architecture: Claude Code persistent style (AGENTS.md + project-slug MEMORY.md)");
+  console.log("  • Storage Location: ~/.opencode-memory");
   console.log("");
 
-  // paso 1: única pregunta (perfil). Todo lo demás es fijo:
-  // agent jean-claude, scope global, default_agent siempre, master siempre.
+  let go = false;
+  while (true) {
+    const raw = await ask("Ready to roundhouse kick amnesia out of your terminal? [Y/n]: ");
+    const parsed = parseYesNo(raw ?? "", true);
+    if (parsed === null) {
+      console.log("Please answer Y or n.");
+      continue;
+    }
+    go = parsed;
+    break;
+  }
+  if (!go) {
+    console.log("Nothing to do.");
+    prompter.close();
+    return;
+  }
+
+  // Todo fijo: agent jean-claude, perfil build-like, scope global,
+  // default_agent siempre, master siempre.
   const agentName = "jean-claude";
   const scope = "global";
-
-  let profile = null;
-  while (true) {
-    console.log("Permission profile:");
-    console.log(
-      "1) build-like  — full access, no prompts (edit: allow, bash: allow)"
-    );
-    console.log(
-      "2) ask-first   — asks before edits and shell (edit: ask, bash: ask)"
-    );
-    console.log(
-      "3) plan-like   — read-only, cannot edit (edit: deny, bash: ask)"
-    );
-    const raw = await ask("Choose [1]: ");
-    const choice = (raw || "").trim() === "" ? "1" : raw.trim();
-    if (PROFILES[choice]) {
-      profile = PROFILES[choice];
-      break;
-    }
-    console.log("Invalid choice. Enter 1, 2 or 3.");
-  }
+  const profile = PROFILES["1"];
 
   let AGENTFILE;
   let CMDFILE;
@@ -311,40 +296,15 @@ async function runInit() {
     // {absoluteMemRoot} residual (si el template lo trajera): interpolar también
     rendered = rendered.split("{absoluteMemRoot}").join(MEMROOT);
 
-    if (fs.existsSync(AGENTFILE)) {
-      const raw = await ask(
-        "Agent file already exists. Overwrite? (y/N): "
-      );
-      const parsed = parseYesNo(raw ?? "", false);
-      if (parsed === true) {
-        trackWrite(AGENTFILE, rendered);
-      } else {
-        skipped.push(AGENTFILE);
-        console.log("Keeping existing agent file.");
-      }
-    } else {
-      trackWrite(AGENTFILE, rendered);
-    }
+    // agent y command son nuestros: se pisan sin preguntar
+    trackWrite(AGENTFILE, rendered);
 
     // paso 2.4b: command file (uninstall from inside opencode)
     const cmdTemplate = fs.readFileSync(
       path.join(TEMPLATES_DIR, "command.md"),
       "utf8"
     );
-    if (fs.existsSync(CMDFILE)) {
-      const raw = await ask(
-        "Uninstall command already exists. Overwrite? (y/N): "
-      );
-      const parsed = parseYesNo(raw ?? "", false);
-      if (parsed === true) {
-        trackWrite(CMDFILE, cmdTemplate);
-      } else {
-        skipped.push(CMDFILE);
-        console.log("Keeping existing uninstall command.");
-      }
-    } else {
-      trackWrite(CMDFILE, cmdTemplate);
-    }
+    trackWrite(CMDFILE, cmdTemplate);
 
     // paso 2.5: default_agent, siempre (global)
     {

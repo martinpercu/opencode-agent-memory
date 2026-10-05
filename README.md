@@ -33,9 +33,9 @@ may be running a cached copy.
 
 Requirements: Node.js >= 18, opencode installed.
 
-The CLI shows what it will install, asks one question (permission profile),
-and does the rest automatically: agent `jean-claude`, global scope, sets it
-as `default_agent`, and refreshes the memory master. Restart opencode
+The CLI shows what it will install and asks one confirmation. Everything
+else is fixed: agent `jean-claude`, build-like permissions, global scope,
+set as `default_agent`, memory master refreshed. Restart opencode
 afterwards (config loads at startup, no hot-reload).
 
 ## What init creates
@@ -90,8 +90,8 @@ folder on first use. Memories from project A are never visible in project B.
 
 ## Configuration
 
-- **Permission profiles** (chosen at init): `build-like` (edit/bash allow),
-  `ask-first` (edit/bash ask), `plan-like` (read-only: edit deny, bash ask).
+- **Permissions:** always build-like (edit/bash allow, plus memory-scoped
+  `external_directory`).
 - **Scope:** always global (`~/.config/opencode/agents/`) — one install serves
   all projects.
 - **`default_agent`:** opt-in at init; edits `opencode.json` only if it parses
