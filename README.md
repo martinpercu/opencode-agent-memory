@@ -1,4 +1,4 @@
-# Jean Claude
+# Jean Claude 🥋
 
 ```text
      _                     ____  _                 _         _ 
@@ -8,91 +8,66 @@
  \___/ \___|\__,_|_| |_|  \____||_|\__,_|\__,_|\__,_|\___|  (_)
 ```
 
-**Roundhouse kick your agent's amnesia.**
+<p align="center">
+  <strong>Roundhouse kick your agent's amnesia.</strong><br />
+  Persistent project memory for <a href="https://opencode.ai">OpenCode</a>.
+</p>
 
-*Split-legged context retention for OpenCode.*
+<p align="center">
+  <a href="https://github.com/martinpercu/opencode-claude-memory/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/martinpercu/opencode-claude-memory?style=social" /></a>
+  <a href="https://github.com/martinpercu/opencode-claude-memory/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/martinpercu/opencode-claude-memory" /></a>
+</p>
 
-> "El agente de OpenCode que nunca olvida dónde dejó los bugs."
+Your AI coding agent is brilliant… until the next session.
 
-Jean Claude is a persistent per-project memory agent for
-[opencode](https://opencode.ai), Claude Code style. 100% prompt + files, zero
-runtime dependencies.
+Then you're explaining the project again, repeating decisions, and reminding it how to run the tests. Again.
 
-Tell him `remember X` once; he writes one file per fact plus a one-line index
-entry, and reads them back in later sessions — per project, automatically.
+**Meet Jean Claude:** an OpenCode agent that saves useful facts and brings them back when you need them — even in a future session.
 
-## Install
+No database. No vector store. No background service. Just an agent and local Markdown files.
+
+## 🚀 Install
+
+You need **Node.js 18+** and [OpenCode](https://opencode.ai).
+
+Run this from your project directory:
 
 ```bash
 npx github:martinpercu/opencode-claude-memory init
 ```
 
-Tip: `npx -y ...` skips the download confirmation. If you don't see the
-ASCII banner, clear the npx cache (`npx clear-npx-cache`) and retry — npx
-may be running a cached copy.
+Follow the confirmation prompt, then restart OpenCode. Jean Claude is installed globally, so one installation can serve all your projects — with separate memory for each one.
 
-Requirements: Node.js >= 18, opencode installed.
-
-The CLI shows what it will install and asks one confirmation. Everything
-else is fixed: agent `jean-claude`, build-like permissions, global scope,
-set as `default_agent`, memory master refreshed. Restart opencode
-afterwards (config loads at startup, no hot-reload).
-
-## What init creates
-
-```
-~/.opencode-memory/
-  instructions.md            # master copy of the memory prompt (source for future updates)
-  -Users-you-myproject/      # slug of the project you ran init in (path with / -> -)
-    MEMORY.md                # index: one line per memory, never memory content
-    memory/                  # one file per fact, with frontmatter
-
-~/.config/opencode/agents/jean-claude.md      # the agent (always global)
-~/.config/opencode/commands/jean-claude-uninstall.md  # /jean-claude-uninstall inside opencode
-```
-
-`build` and `plan` agents are NOT modified (verified: their resolved configs
-are identical with and without this agent installed).
-
-## Usage
+## 🥋 Try it
 
 ```text
-Tab → jean-claude
-> remember that tests run with pytest -x
-# (writes memory/run-tests-pytest-x.md + one line in MEMORY.md)
+You: Remember that this project uses pnpm and Vitest.
 
-> how do we run the tests?
-# (reads MEMORY.md, then the file, and answers)
+# Later, even in a new session...
+You: How do we run the tests?
+Jean Claude: Use pnpm vitest ...
 
-> forget about the pytest thing
-# (deletes the file and its index entry)
+# Changed your mind?
+You: Forget the old test command.
 ```
 
-One global install works in every project: Jean Claude derives the slug from
-the working directory each session and auto-creates that project's memory
-folder on first use. Memories from project A are never visible in project B.
+Just ask Jean Claude to remember, retrieve, or forget something in plain language.
 
-## Not another `CLAUDE.md`
+## 🧠 Not another `CLAUDE.md`
 
-If you've used Claude Code, you know how useful it is when your agent
-remembers things between sessions.
+If you've used Claude Code, you know how useful it is when your agent remembers things between sessions.
 
-That's **Claude Code's auto-memory system** — and Jean Claude brings that
-same core idea to OpenCode.
+That's **Claude Code's auto-memory system** — and Jean Claude brings that same core idea to OpenCode.
 
 But there's an important distinction.
 
-### Instructions vs. memory
+### 📖 Instructions vs. memory
 
 Think of it like this:
 
-* **`CLAUDE.md` / `AGENTS.md` = The employee handbook.** You write the rules,
-  conventions, and instructions. How to work, which commands to run, what
-  standards to follow.
+* **`CLAUDE.md` / `AGENTS.md` = The employee handbook.** You write the rules, conventions, and instructions. How to work, which commands to run, what standards to follow.
 
-* **Jean Claude's memory = The work diary.** Jean Claude records useful
-  things you discover together: decisions you made, things that didn't work,
-  project quirks, and lessons worth remembering next time.
+* **Jean Claude's memory = The work diary.** Jean Claude records useful things you discover together: decisions you made, things that didn't work, project quirks, and lessons worth remembering next time.
 
 |                         | Instructions         | Jean Claude                     |
 | ----------------------- | -------------------- | ------------------------------- |
@@ -101,89 +76,63 @@ Think of it like this:
 | **Where does it live?** | Usually in your repo | Local memory, outside your repo |
 | **Does it persist?**    | Yes                  | Yes, across sessions            |
 
-**The handbook tells your agent how to work. Jean Claude remembers what you
-learned together.**
+**The handbook tells your agent how to work. Jean Claude remembers what you learned together.**
 
-They complement each other. Keep your instructions in `CLAUDE.md` or
-`AGENTS.md` — and let Jean Claude remember the rest.
+They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md` — and let Jean Claude remember the rest.
 
-> **V1:** Project memory only. Each project gets its own memories.
-> Cross-project personal memory is planned for a future version.
+> **V1:** Project memory only. Each project gets its own memories. Cross-project personal memory is planned for a future version.
 
-## How it works
+## 🥊 Standard `Build` vs Jean Claude
 
-100% prompt + files, zero code at runtime, zero plugin in v1:
+| Feature | Standard `Build` | 🥋 Jean Claude |
+| :--- | :--- | :--- |
+| **System prompt** | Default OpenCode | Memory-protocol system prompt |
+| **Cross-session memory** | None — every session starts blank | Persistent (`~/.opencode-memory/<slug>/`) |
+| **Memory lookup** | N/A | Lazy index (`MEMORY.md` → fact file, only when relevant) |
+| **Your git repo** | — | Untouched (memories live outside the repo) |
+| **Permission popups** | Standard prompts | Memory access never prompts; everything else asks as usual |
+| **`Build`/`Plan` after installing** | — | Byte-identical, zero side effects |
 
-- The agent file's body is the memory prompt: where memory lives
-  (`~/.opencode-memory/<slug>/`), the one-fact-per-file format with
-  `name/description/metadata.type` frontmatter, `[[links]]` between memories,
-  a lazy index (`MEMORY.md`, one line per memory, read first, file content on
-  demand), and when to read/write/forget — including verifying files still
-  exist before recommending them (stale-check).
-- The harness only guarantees folders exist; all behavior comes from the text.
-  Structure mirrors Claude Code's project memory.
-- The installer grants the agent `external_directory: allow` scoped to
-  `~/.opencode-memory` only, so memory access never prompts. Everything else
-  outside the working directory keeps opencode's default (`ask`).
+## ✨ What Jean Claude does
 
-## Configuration
+- **Remembers useful facts:** project decisions, commands, conventions, preferences, and gotchas.
+- **Finds them later:** checks a short index, then reads individual memory files when relevant.
+- **Keeps projects separate:** one project's memories don't leak into another project's context.
+- **Stays local and readable:** memory is plain Markdown you can inspect, edit, back up, or delete.
+- **Skips the extra machinery:** no plugin or memory server in v1; the agent's instructions and OpenCode's existing file tools do the work.
 
-- **Permissions:** always build-like (edit/bash allow, plus memory-scoped
-  `external_directory`).
-- **Scope:** always global (`~/.config/opencode/agents/`) — one install serves
-  all projects.
-- **`default_agent`:** opt-in at init; edits `opencode.json` only if it parses
-  as strict JSON, otherwise prints the line to add manually.
-- Verify after install: `opencode debug agent jean-claude` shows the rendered
-  prompt and the profile's permissions.
+## 📂 Where memories live
 
-## Known limitations (v1)
+```text
+~/.opencode-memory/
+└── <your-project>/
+    ├── MEMORY.md       # Short index
+    └── memory/         # One Markdown file per fact
+```
 
-- Per-project memory only. No cross-project personal memory (planned for v2).
-- No automatic updater: re-run `init` and confirm overwrites to refresh the
-  agent text (your `MEMORY.md` and `memory/*.md` are never touched).
-- No plugin: the index is not injected at session start — the agent reads it
-  with `read` when a task calls for it.
-- Old tool outputs can be compacted away over very long sessions; the prompt
-  itself is re-rendered every request and survives compaction.
-- Portability across models is by design (pure prompt) and verified end to
-  end: a fact written by one model (local Qwen) was correctly recalled by a
-  different model (Muse Spark) in a new session.
+## ⚡ How it works
 
-## Uninstall
+1. Ask Jean Claude to remember something useful.
+2. He saves it in a Markdown file and adds a line to the index.
+3. In a later session, he checks the index when the task makes that memory relevant.
+4. He reads the matching file and uses it to help answer.
 
-From anywhere:
+**One important detail:** v1 doesn't automatically inject the memory index into the prompt at startup. Jean Claude looks up memories when they seem relevant, so recall is useful but not infallible — just like any AI agent.
+
+## 🧹 Uninstall
 
 ```bash
 jean-claude uninstall
 ```
 
-It tells you what it removes (agent, command, memory data, `default_agent`
-key), asks one confirmation — "no" leaves everything untouched — and on
-"yes" removes it all, leaving opencode exactly as it was before Jean Claude.
-Restart opencode afterwards. Inside opencode you can also run
-`/jean-claude-uninstall`.
+Or use `/jean-claude-uninstall` inside OpenCode. Jean Claude shows what will be removed and asks for confirmation first.
 
-Manual fallback (no CLI at hand) — all four steps:
+## ⭐ Give your agent a memory
 
-```bash
-rm ~/.config/opencode/agents/jean-claude.md        # the agent
-rm ~/.config/opencode/commands/jean-claude-uninstall.md  # the command
-rm -rf ~/.opencode-memory                          # memory data
-```
+If Jean Claude saves you from explaining the same project twice, **give the repo a star**. It's a tiny click — no roundhouse kick required.
 
-Then remove `"default_agent": "jean-claude"` from `opencode.json` if present.
+[⭐ Star Jean Claude on GitHub](https://github.com/martinpercu/opencode-claude-memory)
 
-opencode is left exactly as it was.
+## License
 
-## Roadmap (v2)
-
-npm publish, dual personal memory, `update` command, real plugin
-(`experimental.chat.system.transform` to inject the index at t=0,
-`experimental.session.compacting` to shield memory reads from compaction).
-
-## Credits
-
-Structure inspired by Claude Code (Anthropic); behavior researched from its
-leaked system prompt and re-implemented for opencode's agent format.
-Zero dependencies, MIT licensed.
+[MIT](LICENSE)
