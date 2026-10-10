@@ -122,7 +122,7 @@ They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md`
 ## 🧹 Uninstall
 
 ```bash
-jean-claude uninstall
+npx github:martinpercu/opencode-claude-memory uninstall
 ```
 
 Or use `/jean-claude-uninstall` inside OpenCode. Jean Claude shows what will be removed and asks for confirmation first.
