@@ -173,8 +173,8 @@ async function runInit() {
   const MEMROOT = path.join(HOME, ".opencode-memory");
   const slug = computeSlug(CWD);
   const PROJDIR = path.join(MEMROOT, slug);
-  const INDEX = path.join(PROJDIR, "MEMORY.md");
   const MEMDIR = path.join(PROJDIR, "memory");
+  const INDEX = path.join(MEMDIR, "MEMORY.md");
   const MASTER = path.join(MEMROOT, "instructions.md");
 
   // paso 0: detección previa (no bloqueante)
@@ -215,7 +215,7 @@ async function runInit() {
   console.log("");
   console.log("This will set up:");
   console.log("  • Agent: 'Jean Claude' registered in OpenCode");
-  console.log("  • Memory Architecture: Claude Code persistent style (AGENTS.md + project-slug MEMORY.md)");
+  console.log("  • Memory Architecture: Claude Code-style per-project memory (memory/MEMORY.md + fact files)");
   console.log("  • Storage Location: ~/.opencode-memory");
   console.log("");
 

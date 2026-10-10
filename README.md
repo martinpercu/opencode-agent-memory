@@ -87,7 +87,7 @@ They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md`
 | Feature | Standard `Build` | 🥋 Jean Claude |
 | :--- | :--- | :--- |
 | **System prompt** | Default OpenCode | Memory-protocol system prompt |
-| **Cross-session memory** | None — every session starts blank | Persistent (`~/.opencode-memory/<slug>/`) |
+| **Cross-session memory** | None — every session starts blank | Persistent (`~/.opencode-memory/<slug>/memory/`) |
 | **Memory lookup** | N/A | Lazy index (`MEMORY.md` → fact file, only when relevant) |
 | **Your git repo** | — | Untouched (memories live outside the repo) |
 | **Permission popups** | Standard prompts | Memory access never prompts; everything else asks as usual |
@@ -106,8 +106,9 @@ They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md`
 ```text
 ~/.opencode-memory/
 └── <your-project>/
-    ├── MEMORY.md       # Short index
-    └── memory/         # One Markdown file per fact
+    └── memory/
+        ├── MEMORY.md       # Short index
+        └── <fact>.md       # One Markdown file per fact
 ```
 
 ## ⚡ How it works
