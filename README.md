@@ -38,6 +38,8 @@ npx github:martinpercu/opencode-claude-memory init
 
 Follow the confirmation prompt, then restart OpenCode. Jean Claude is installed globally, so one installation can serve all your projects — with separate memory for each one.
 
+If you already use Claude Code, `init` also copies any existing per-project memories it finds in `~/.claude/projects/*/memory/`, so Jean Claude starts with your history. It's a one-time copy — nothing in `~/.claude` is ever modified or deleted.
+
 ## 🥋 Try it
 
 ```text

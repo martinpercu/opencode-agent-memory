@@ -1,6 +1,6 @@
 {
   "name": "opencode-claude-memory",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Jean Claude — Roundhouse kick your agent's amnesia. Claude Code-style persistent per-project memory agent for opencode. 100% prompt + files, zero runtime deps.",
   "type": "module",
   "bin": { "jean-claude": "bin/cli.js" },

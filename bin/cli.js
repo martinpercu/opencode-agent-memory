@@ -85,6 +85,114 @@ function computeSlug(cwd) {
   return abs.replace(/\//g, "-");
 }
 
+function isDir(p) {
+  try {
+    return fs.statSync(p).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+function isFile(p) {
+  try {
+    return fs.statSync(p).isFile();
+  } catch {
+    return false;
+  }
+}
+
+function listMemoryEntries(p) {
+  try {
+    return fs.readdirSync(p).filter((name) => name !== ".DS_Store");
+  } catch {
+    return [];
+  }
+}
+
+function scanClaudeProjectMemories(home) {
+  const projectsDir = path.join(home, ".claude", "projects");
+  const candidates = [];
+  let entries = [];
+  try {
+    entries = fs.readdirSync(projectsDir, { withFileTypes: true });
+  } catch {
+    return candidates;
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const memoryDir = path.join(projectsDir, entry.name, "memory");
+    const legacyIndex = path.join(projectsDir, entry.name, "MEMORY.md");
+    const hasMemoryFiles = isDir(memoryDir) && listMemoryEntries(memoryDir).length > 0;
+    const hasLegacyIndex = isFile(legacyIndex);
+    if (hasMemoryFiles || hasLegacyIndex) {
+      candidates.push({
+        slug: entry.name,
+        memoryDir,
+        legacyIndex,
+        hasMemoryFiles,
+        hasLegacyIndex,
+      });
+    }
+  }
+  return candidates;
+}
+
+function copyMemoryFiles(srcDir, destDir) {
+  let count = 0;
+  let entries = [];
+  try {
+    entries = fs.readdirSync(srcDir, { withFileTypes: true });
+  } catch {
+    return count;
+  }
+  for (const entry of entries) {
+    if (entry.name === ".DS_Store") continue;
+    const src = path.join(srcDir, entry.name);
+    const dest = path.join(destDir, entry.name);
+    if (entry.isDirectory()) {
+      fs.mkdirSync(dest, { recursive: true });
+      count += copyMemoryFiles(src, dest);
+    } else if (entry.isFile()) {
+      fs.mkdirSync(destDir, { recursive: true });
+      fs.copyFileSync(src, dest);
+      count += 1;
+    }
+  }
+  return count;
+}
+
+// Copia one-shot, solo lectura sobre ~/.claude. Nunca toca CC ni pisa memorias
+// de Jean Claude existentes: slug con datos en destino = skip.
+function importClaudeCodeMemories(home, memroot) {
+  const result = { imported: [], skipped: [], failed: [], files: 0 };
+  for (const cand of scanClaudeProjectMemories(home)) {
+    const destDir = path.join(memroot, cand.slug, "memory");
+    if (listMemoryEntries(destDir).length > 0) {
+      result.skipped.push(cand.slug);
+      continue;
+    }
+    try {
+      let files = 0;
+      if (cand.hasMemoryFiles) {
+        files += copyMemoryFiles(cand.memoryDir, destDir);
+      }
+      const destIndex = path.join(destDir, "MEMORY.md");
+      if (!isFile(destIndex) && cand.hasLegacyIndex) {
+        fs.mkdirSync(destDir, { recursive: true });
+        fs.copyFileSync(cand.legacyIndex, destIndex);
+        files += 1;
+      }
+      if (files > 0) {
+        result.imported.push({ slug: cand.slug, files });
+        result.files += files;
+      }
+    } catch {
+      result.failed.push(cand.slug);
+    }
+  }
+  return result;
+}
+
 function parseYesNo(input, def = false) {
   const t = input.trim().toLowerCase();
   if (t === "") return def;
@@ -204,6 +312,8 @@ async function runInit() {
     process.exit(130);
   });
 
+  const claudeCandidates = scanClaudeProjectMemories(HOME);
+
   console.log(`
      _                     ____  _                 _         _ 
     | | ___  __ _ _ __    / ___|| | __ _ _   _  __| | ___   | |
@@ -217,6 +327,11 @@ async function runInit() {
   console.log("  • Agent: 'Jean Claude' registered in OpenCode");
   console.log("  • Memory Architecture: Claude Code-style per-project memory (memory/MEMORY.md + fact files)");
   console.log("  • Storage Location: ~/.opencode-memory");
+  if (claudeCandidates.length > 0) {
+    console.log(
+      `  • Claude Code memories found: ${claudeCandidates.length} project(s) — will be copied (read-only; ~/.claude is never modified)`
+    );
+  }
   console.log("");
 
   let go = false;
@@ -271,6 +386,9 @@ async function runInit() {
         throw err;
       }
     }
+
+    // paso 2.1b: import de memorias de Claude Code (solo lectura sobre ~/.claude)
+    const importResult = importClaudeCodeMemories(HOME, MEMROOT);
 
     // paso 2.2: MASTER verbatim, siempre se pisa (es nuestro, no datos)
     const masterTemplate = fs.readFileSync(
@@ -361,6 +479,21 @@ async function runInit() {
 
     console.log("✓ Jean Claude installed.");
     console.log(`  Restart opencode to select "Jean Claude".`);
+    if (importResult.imported.length > 0) {
+      console.log("  Imported Claude Code memories:");
+      for (const item of importResult.imported) {
+        console.log(`    + ${item.slug} (${item.files} file${item.files === 1 ? "" : "s"})`);
+      }
+      console.log("  ~/.claude was not modified.");
+    }
+    if (importResult.skipped.length > 0) {
+      console.log("  Claude Code projects already covered by Jean Claude memories (kept as-is):");
+      for (const slug of importResult.skipped) console.log(`    - ${slug}`);
+    }
+    if (importResult.failed.length > 0) {
+      console.log("  Claude Code projects that could not be imported:");
+      for (const slug of importResult.failed) console.log(`    ! ${slug}`);
+    }
   } catch (err) {
     try {
       prompter.close();
