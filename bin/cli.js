@@ -284,6 +284,9 @@ async function runInit() {
   const MEMDIR = path.join(PROJDIR, "memory");
   const INDEX = path.join(MEMDIR, "MEMORY.md");
   const MASTER = path.join(MEMROOT, "instructions.md");
+  const resolvedCwd = path.resolve(CWD);
+  const seedProject =
+    resolvedCwd !== path.parse(resolvedCwd).root && resolvedCwd !== path.resolve(HOME);
 
   // paso 0: detección previa (no bloqueante)
   let opencodeEvidence = false;
@@ -378,7 +381,9 @@ async function runInit() {
 
   try {
     // paso 2.1: mkdir -p
-    for (const dir of [MEMROOT, PROJDIR, MEMDIR, path.dirname(AGENTFILE), path.dirname(CMDFILE)]) {
+    const dirsToCreate = [MEMROOT, path.dirname(AGENTFILE), path.dirname(CMDFILE)];
+    if (seedProject) dirsToCreate.push(PROJDIR, MEMDIR);
+    for (const dir of dirsToCreate) {
       try {
         fs.mkdirSync(dir, { recursive: true });
       } catch (err) {
@@ -398,7 +403,11 @@ async function runInit() {
     trackWrite(MASTER, masterTemplate);
 
     // paso 2.3: INDEX — nunca tocar si existe
-    if (fs.existsSync(INDEX)) {
+    if (!seedProject) {
+      console.log(
+        "Installed from root/home directory: skipping project seed (memory folders are created per project on first use)."
+      );
+    } else if (fs.existsSync(INDEX)) {
       skipped.push(INDEX);
       console.log("Memory index already exists, keeping it.");
     } else {
