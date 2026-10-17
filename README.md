@@ -1,3 +1,5 @@
+🌐 [Leer en español](README.es.md)
+
 # Jean Claude 🥋
 
 ```text
@@ -94,6 +96,8 @@ They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md`
 | **Your git repo** | — | Untouched (memories live outside the repo) |
 | **Permission popups** | Standard prompts | Memory access never prompts; everything else asks as usual |
 | **`Build`/`Plan` after installing** | — | Byte-identical, zero side effects |
+
+> 📖 Want the play-by-play? Same scenario, two sessions: [Jean Claude](comparisons/session-jean-claude.md) vs [standard `Build`](comparisons/session-build.md) — including what the model receives at each step.
 
 ## ✨ What Jean Claude does
 
