@@ -97,7 +97,7 @@ They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md`
 | **Permission popups** | Standard prompts | Memory access never prompts; everything else asks as usual |
 | **`Build`/`Plan` after installing** | — | Byte-identical, zero side effects |
 
-> 📖 Want the play-by-play? Same scenario, two sessions: [Jean Claude](comparisons/session-jean-claude.md) vs [standard `Build`](comparisons/session-build.md) — including what the model receives at each step.
+> 📖 Want the play-by-play? [Same session, side by side: Jean Claude vs standard `Build`](comparisons/jc-vs-build.md) — what each model receives at every step.
 
 ## ✨ What Jean Claude does
 
