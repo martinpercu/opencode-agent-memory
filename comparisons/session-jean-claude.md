@@ -1,4 +1,4 @@
-🌐 [Leer en español](session-jean-claude.es.md)
+<p align="right">🌐 <a href="session-jean-claude.es.md">Leer en español</a></p>
 
 # Example session with Jean Claude (illustrated reconstruction)
 
