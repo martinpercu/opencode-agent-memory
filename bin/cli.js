@@ -17,21 +17,21 @@ const PROFILES = {
     description:
       "Build agent with persistent per-project memory (Jean Claude). Full tool access.",
     permissionBlock:
-      "permission:\n  edit: allow\n  bash: allow\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow",
+      "permission:\n  edit: allow\n  bash: allow\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow\n    \"{claudeProjectsDir}\": allow\n    \"{claudeProjectsDir}/**\": allow",
   },
   "2": {
     key: "ask-first",
     description:
       "Agent with persistent per-project memory (Jean Claude). Asks before edits and shell commands.",
     permissionBlock:
-      "permission:\n  edit: ask\n  bash: ask\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow",
+      "permission:\n  edit: ask\n  bash: ask\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow\n    \"{claudeProjectsDir}\": allow\n    \"{claudeProjectsDir}/**\": allow",
   },
   "3": {
     key: "plan-like",
     description:
       "Read-only planning agent with persistent per-project memory (Jean Claude).",
     permissionBlock:
-      "permission:\n  edit: deny\n  bash: ask\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow",
+      "permission:\n  edit: deny\n  bash: ask\n  external_directory:\n    \"{absoluteMemRoot}\": allow\n    \"{absoluteMemRoot}/**\": allow\n    \"{claudeProjectsDir}\": allow\n    \"{claudeProjectsDir}/**\": allow",
   },
 };
 
@@ -279,6 +279,7 @@ async function runInit() {
   const HOME = os.homedir();
   const CWD = process.cwd();
   const MEMROOT = path.join(HOME, ".opencode-memory");
+  const CLAUDE_PROJECTS = path.join(HOME, ".claude", "projects");
   const slug = computeSlug(CWD);
   const PROJDIR = path.join(MEMROOT, slug);
   const MEMDIR = path.join(PROJDIR, "memory");
@@ -329,6 +330,7 @@ async function runInit() {
   console.log("This will set up:");
   console.log("  • Agent: 'Jean Claude' registered in OpenCode");
   console.log("  • Memory Architecture: Claude Code-style per-project memory (memory/MEMORY.md + fact files)");
+  console.log("  • Skills: 'jean-claude' + 'jean-claude-divergence' in OpenCode");
   console.log("  • Storage Location: ~/.opencode-memory");
   if (claudeCandidates.length > 0) {
     console.log(
@@ -419,16 +421,27 @@ async function runInit() {
       path.join(TEMPLATES_DIR, "agent.md"),
       "utf8"
     );
-    const memoryInstructions = masterTemplate.split("{absoluteMemRoot}").join(MEMROOT);
+    const memoryInstructions = masterTemplate
+      .split("{absoluteMemRoot}")
+      .join(MEMROOT)
+      .split("{claudeProjectsDir}")
+      .join(CLAUDE_PROJECTS);
     let rendered = agentTemplate;
     rendered = rendered.split("{profileDescription}").join(profile.description);
     rendered = rendered
       .split("{permissionBlock}")
-      .join(profile.permissionBlock.split("{absoluteMemRoot}").join(MEMROOT));
+      .join(
+        profile.permissionBlock
+          .split("{absoluteMemRoot}")
+          .join(MEMROOT)
+          .split("{claudeProjectsDir}")
+          .join(CLAUDE_PROJECTS)
+      );
     rendered = rendered.split("{memoryInstructions}").join(memoryInstructions);
     rendered = rendered.split("{agentName}").join(agentName);
-    // {absoluteMemRoot} residual (si el template lo trajera): interpolar también
+    // placeholders residuales (si el template los trajera): interpolar también
     rendered = rendered.split("{absoluteMemRoot}").join(MEMROOT);
+    rendered = rendered.split("{claudeProjectsDir}").join(CLAUDE_PROJECTS);
 
     // agent y command son nuestros: se pisan sin preguntar
     trackWrite(AGENTFILE, rendered);
@@ -439,6 +452,35 @@ async function runInit() {
       "utf8"
     );
     trackWrite(CMDFILE, cmdTemplate);
+
+    // paso 2.4c: skills (nuestros: se pisan sin preguntar)
+    const SKILLS_SRC = path.join(TEMPLATES_DIR, "skills");
+    const SKILLS_DEST = path.join(HOME, ".config", "opencode", "skills");
+    let skillEntries = [];
+    try {
+      skillEntries = fs.readdirSync(SKILLS_SRC, { withFileTypes: true });
+    } catch {
+      skillEntries = [];
+    }
+    for (const entry of skillEntries) {
+      if (!entry.isDirectory() || entry.name.startsWith(".")) continue;
+      let skillText;
+      try {
+        skillText = fs.readFileSync(path.join(SKILLS_SRC, entry.name, "SKILL.md"), "utf8");
+      } catch {
+        continue;
+      }
+      skillText = skillText.split("{absoluteMemRoot}").join(MEMROOT);
+      skillText = skillText.split("{claudeProjectsDir}").join(CLAUDE_PROJECTS);
+      const destSkillDir = path.join(SKILLS_DEST, entry.name);
+      try {
+        fs.mkdirSync(destSkillDir, { recursive: true });
+      } catch (err) {
+        failed.push(destSkillDir + " (mkdir)");
+        throw err;
+      }
+      trackWrite(path.join(destSkillDir, "SKILL.md"), skillText);
+    }
 
     // paso 2.5: default_agent, siempre (global)
     {
@@ -612,6 +654,27 @@ async function runUninstall() {
       removed.push(MEMROOT);
     } catch {
       failed.push(MEMROOT);
+    }
+  }
+
+  for (const skillDir of [
+    path.join(HOME, ".config", "opencode", "skills", "jean-claude"),
+    path.join(HOME, ".config", "opencode", "skills", "jean-claude-divergence"),
+    path.join(CWD, ".opencode", "skills", "jean-claude"),
+    path.join(CWD, ".opencode", "skills", "jean-claude-divergence"),
+  ]) {
+    let isDir = false;
+    try {
+      isDir = fs.statSync(skillDir).isDirectory();
+    } catch {
+      isDir = false;
+    }
+    if (!isDir) continue;
+    try {
+      fs.rmSync(skillDir, { recursive: true, force: true });
+      removed.push(skillDir);
+    } catch {
+      failed.push(skillDir);
     }
   }
 

@@ -21,6 +21,30 @@ On first memory use in a project, bootstrap it (idempotent, safe to re-run):
 If `{absoluteMemRoot}/<slug>/memory/MEMORY.md` does not exist, create it with the
 single line `# Memory Index`.
 
+## Claude Code import (lazy, one-shot per project)
+
+Jean Claude can inherit memories from Claude Code — same per-project layout,
+same slugs. On first memory use in a project, BEFORE creating an empty index,
+check whether Claude Code already has memories for this slug:
+`bash: ls "{claudeProjectsDir}/<slug>/memory"` (ignore `.DS_Store`).
+
+- If that directory holds real memory files AND your `<slug>/memory/` is still
+  empty (missing entirely, or the index holds only the seed `# Memory Index`
+  with no `- [Title](file)` entries): inherit them — `bash: mkdir -p` your
+  memory dir, then copy the contents over
+  (`bash: cp -R "{src}/." "{dest}/"`, then delete any `.DS_Store` that came
+  along). Legacy case: no `memory/` dir but a `<slug>/MEMORY.md` file exists
+  at the slug root — copy it as your `memory/MEMORY.md`.
+- If your memory already holds real entries AND Claude Code's side does too:
+  that is a real divergence — STOP. Do not merge, copy, or delete anything.
+  Load the `jean-claude-divergence` skill with the `skill` tool and follow it:
+  it tells you how to show both sides to the user and ask what to do.
+- NEVER write to, move, or delete anything under `{claudeProjectsDir}`. That
+  tree is read-only: copy FROM it, never TO it — no exceptions, even if the
+  user asks to "sync back" (offer the JC-side options from the skill instead).
+- After inheriting, work normally: the index and facts are yours now; all
+  future writes go only to `{absoluteMemRoot}/<slug>/memory/`.
+
 Each memory is one file holding one fact, written inside the `memory/` folder
 next to the index, with frontmatter:
 
