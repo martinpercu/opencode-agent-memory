@@ -16,8 +16,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/martinpercu/opencode-claude-memory/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/martinpercu/opencode-claude-memory?style=social" /></a>
-  <a href="https://github.com/martinpercu/opencode-claude-memory/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/martinpercu/opencode-claude-memory" /></a>
+  <a href="https://github.com/martinpercu/opencode-jean-claude/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/martinpercu/opencode-jean-claude?style=social" /></a>
+  <a href="https://github.com/martinpercu/opencode-jean-claude/blob/main/LICENSE"><img alt="MIT License" src="https://img.shields.io/github/license/martinpercu/opencode-jean-claude" /></a>
 </p>
 
 Tu agente de IA es brillante… hasta la próxima sesión.
@@ -35,7 +35,7 @@ Necesitás **Node.js 18+** y [OpenCode](https://opencode.ai).
 Corré esto desde tu proyecto:
 
 ```bash
-npx github:martinpercu/opencode-claude-memory init
+npx github:martinpercu/opencode-jean-claude init
 ```
 
 Seguí el prompt de confirmación y reiniciá OpenCode. Jean Claude se instala global, así que una instalación sirve para todos tus proyectos — con memoria separada para cada uno.
@@ -129,7 +129,7 @@ Se complementan. Mantené tus instrucciones en `CLAUDE.md` o `AGENTS.md` — y d
 ## 🧹 Desinstalación
 
 ```bash
-npx github:martinpercu/opencode-claude-memory uninstall
+npx github:martinpercu/opencode-jean-claude uninstall
 ```
 
 O usá `/jean-claude-uninstall` dentro de OpenCode. Jean Claude muestra lo que se va a borrar y pide confirmación antes.
@@ -138,7 +138,7 @@ O usá `/jean-claude-uninstall` dentro de OpenCode. Jean Claude muestra lo que s
 
 Si Jean Claude te salva de explicar dos veces el mismo proyecto, **dale una estrella al repo**. Es un click chiquito — sin patada voladora.
 
-[⭐ Jean Claude en GitHub](https://github.com/martinpercu/opencode-claude-memory)
+[⭐ Jean Claude en GitHub](https://github.com/martinpercu/opencode-jean-claude)
 
 ## Licencia
 

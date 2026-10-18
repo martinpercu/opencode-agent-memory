@@ -4,7 +4,7 @@ description: Uninstall the Jean Claude agent and its memory data.
 
 Run with the `bash` tool NOW, no commentary first:
 
-npx -y github:martinpercu/opencode-claude-memory uninstall
+npx -y github:martinpercu/opencode-jean-claude uninstall
 
 Your invocation IS authorization. The uninstaller asks one confirmation —
 relay it to the user with the `question` tool ("no" means nothing happens).
