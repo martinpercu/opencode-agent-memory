@@ -109,6 +109,34 @@ function listMemoryEntries(p) {
   }
 }
 
+function isLocalSlug(slug, homeSlug) {
+  return slug === homeSlug || slug.startsWith(homeSlug + "-");
+}
+
+// Nombre mostrable de un slug: el basename de la carpeta real del proyecto.
+// El guion es ambiguo (una carpeta `menu-detector` vs dos `menu/detector`),
+// así que se resuelve contra el filesystem: convierte guiones en `/` de
+// izquierda a derecha y se queda con el path más profundo que exista.
+// Si el proyecto ya no existe, fallback al slug completo.
+function displayNameForSlug(slug, home, homeSlug) {
+  if (!isLocalSlug(slug, homeSlug)) return slug;
+  const rest = slug === homeSlug ? "" : slug.slice(homeSlug.length + 1);
+  if (!rest) return slug;
+  const dashIdx = [];
+  for (let i = 0; i < rest.length; i++) if (rest[i] === "-") dashIdx.push(i);
+  for (let k = dashIdx.length; k >= 0; k--) {
+    const arr = rest.split("");
+    for (let j = 0; j < k; j++) arr[dashIdx[j]] = "/";
+    try {
+      const candidate = path.join(home, arr.join(""));
+      if (fs.statSync(candidate).isDirectory()) return path.basename(candidate);
+    } catch {
+      // probar con un nivel menos de profundidad
+    }
+  }
+  return slug;
+}
+
 function scanClaudeProjectMemories(home) {
   const projectsDir = path.join(home, ".claude", "projects");
   const candidates = [];
@@ -162,10 +190,16 @@ function copyMemoryFiles(srcDir, destDir) {
 }
 
 // Copia one-shot, solo lectura sobre ~/.claude. Nunca toca CC ni pisa memorias
-// de Jean Claude existentes: slug con datos en destino = skip.
+// de Jean Claude existentes: slug con datos en destino = skip. Slugs de otro
+// usuario/máquina (no empiezan con el slug del HOME actual) = skip (fósiles).
 function importClaudeCodeMemories(home, memroot) {
-  const result = { imported: [], skipped: [], failed: [], files: 0 };
+  const homeSlug = home.replace(/\//g, "-");
+  const result = { imported: [], skipped: [], failed: [], foreign: [], files: 0 };
   for (const cand of scanClaudeProjectMemories(home)) {
+    if (!isLocalSlug(cand.slug, homeSlug)) {
+      result.foreign.push(cand.slug);
+      continue;
+    }
     const destDir = path.join(memroot, cand.slug, "memory");
     if (listMemoryEntries(destDir).length > 0) {
       result.skipped.push(cand.slug);
@@ -317,6 +351,9 @@ async function runInit() {
   });
 
   const claudeCandidates = scanClaudeProjectMemories(HOME);
+  const homeSlug = HOME.replace(/\//g, "-");
+  const localCandidates = claudeCandidates.filter((c) => isLocalSlug(c.slug, homeSlug));
+  const foreignCandidates = claudeCandidates.filter((c) => !isLocalSlug(c.slug, homeSlug));
 
   console.log(`
      _                     ____  _                 _         _ 
@@ -332,9 +369,14 @@ async function runInit() {
   console.log("  • Memory Architecture: Claude Code-style per-project memory (memory/MEMORY.md + fact files)");
   console.log("  • Skills: 'jean-claude' + 'jean-claude-divergence' in OpenCode");
   console.log("  • Storage Location: ~/.opencode-memory");
-  if (claudeCandidates.length > 0) {
+  if (localCandidates.length > 0) {
     console.log(
-      `  • Claude Code memories found: ${claudeCandidates.length} project(s) — will be copied (read-only; ~/.claude is never modified)`
+      `  • Claude Code memories found: ${localCandidates.length} project(s) — will be copied (read-only; ~/.claude is never modified)`
+    );
+  }
+  if (foreignCandidates.length > 0) {
+    console.log(
+      `  • Claude Code memories from another user/machine: ${foreignCandidates.length} project(s) — will be skipped`
     );
   }
   console.log("");
@@ -529,18 +571,27 @@ async function runInit() {
     prompter.close();
 
     console.log("✓ Jean Claude installed.");
-    console.log(`  Restart opencode to select "Jean Claude".`);
     if (importResult.imported.length > 0) {
-      console.log("  Imported Claude Code memories:");
+      console.log("  Memories imported:");
       for (const item of importResult.imported) {
-        console.log(`    + ${item.slug} (${item.files} file${item.files === 1 ? "" : "s"})`);
+        const name = displayNameForSlug(item.slug, HOME, homeSlug);
+        console.log(`    + ${name} (${item.files} file${item.files === 1 ? "" : "s"})`);
       }
-      console.log("  ~/.claude was not modified.");
     }
     if (importResult.skipped.length > 0) {
       console.log("  Claude Code projects already covered by Jean Claude memories (kept as-is):");
-      for (const slug of importResult.skipped) console.log(`    - ${slug}`);
+      for (const slug of importResult.skipped) {
+        console.log(`    - ${displayNameForSlug(slug, HOME, homeSlug)}`);
+      }
     }
+    if (importResult.foreign.length > 0) {
+      console.log("  Claude Code projects from another user/machine (not imported):");
+      for (const slug of importResult.foreign) {
+        console.log(`    ○ ${displayNameForSlug(slug, HOME, homeSlug)}`);
+      }
+    }
+    console.log("");
+    console.log('  Restart opencode and select "Jean Claude".');
     if (importResult.failed.length > 0) {
       console.log("  Claude Code projects that could not be imported:");
       for (const slug of importResult.failed) console.log(`    ! ${slug}`);
@@ -582,9 +633,7 @@ async function runUninstall() {
     process.exit(130);
   });
 
-  console.log("This uninstaller removes the Jean Claude agent and its memory");
-  console.log("from opencode (agent file, uninstall command, memory data, and");
-  console.log("the default_agent key if it points at Jean Claude).");
+  console.log("This uninstaller removes Jean Claude and his memory.");
   console.log("");
 
   const agentName = "jean-claude";
@@ -624,7 +673,7 @@ async function runUninstall() {
 
   let yes = false;
   while (true) {
-    const raw = await ask("Uninstall Jean Claude? (y/N): ");
+    const raw = await ask("Are you sure you want to Uninstall Jean Claude? (y/N): ");
     const parsed = parseYesNo(raw ?? "", false);
     if (parsed === null) {
       console.log("Please answer y or N.");

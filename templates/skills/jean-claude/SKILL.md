@@ -64,3 +64,7 @@ claims (what exists, what was imported) by listing the directories.
   which resolve differently) — recompute the slug.
 - "Forget X didn't work": the fact file plus its index line must both be
   gone — list the memory dir to confirm.
+- Folders like `-Users-<someone-else>-*` in either tree are inert mirrors
+  from another machine/user (their paths don't exist here, so no session
+  ever reads them). The JC-side copies can be deleted; never touch
+  `~/.claude`.
