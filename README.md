@@ -35,7 +35,7 @@ You need **Node.js 18+** and [OpenCode](https://opencode.ai).
 Run this from your project directory:
 
 ```bash
-npx github:martinpercu/opencode-jean-claude init
+npx -y github:martinpercu/opencode-jean-claude init
 ```
 
 Follow the confirmation prompt, then restart OpenCode. Jean Claude is installed globally, so one installation can serve all your projects — with separate memory for each one.
@@ -129,7 +129,7 @@ They complement each other. Keep your instructions in `CLAUDE.md` or `AGENTS.md`
 ## 🧹 Uninstall
 
 ```bash
-npx github:martinpercu/opencode-jean-claude uninstall
+npx -y github:martinpercu/opencode-jean-claude uninstall
 ```
 
 Jean Claude shows what will be removed and asks for confirmation first.

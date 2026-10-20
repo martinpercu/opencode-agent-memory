@@ -57,7 +57,7 @@ Usage:
 Examples:
   jean-claude init
   jean-claude uninstall
-  npx github:martinpercu/opencode-jean-claude init`);
+  npx -y github:martinpercu/opencode-jean-claude init`);
 }
 
 function hasOpencodeInPath() {
