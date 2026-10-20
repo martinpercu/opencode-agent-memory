@@ -733,18 +733,21 @@ async function runUninstall() {
 
   prompter.close();
 
-  console.log("✓ Jean Claude uninstalled.");
-  if (removed.length > 0) {
-    console.log("Removed:");
-    for (const p of removed) console.log(`  - ${p}`);
-  }
   if (failed.length > 0) {
-    console.log("Failed (check permissions):");
-    for (const p of failed) console.log(`  ! ${p}`);
+    console.log("  Could not remove (check permissions):");
+    for (const p of failed) console.log(`    ! ${p}`);
     process.exit(1);
   }
-  console.log("opencode is now exactly as it was before Jean Claude was installed.");
-  console.log("Restart opencode for changes to take effect.");
+
+  console.log("🥋 Jean Claude has left the dojo.");
+  console.log("");
+  console.log("✓ Uninstalled successfully.");
+  console.log("");
+  console.log("  Agent and skills removed");
+  console.log("  Local memory deleted");
+  console.log("  OpenCode configuration restored");
+  console.log("");
+  console.log("Restart OpenCode to finish.");
 }
 
 await main();
