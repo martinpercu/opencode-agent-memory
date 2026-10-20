@@ -132,7 +132,7 @@ Se complementan. Mantené tus instrucciones en `CLAUDE.md` o `AGENTS.md` — y d
 npx github:martinpercu/opencode-jean-claude uninstall
 ```
 
-O usá `/jean-claude-uninstall` dentro de OpenCode. Jean Claude muestra lo que se va a borrar y pide confirmación antes.
+Jean Claude muestra lo que se va a borrar y pide confirmación antes.
 
 ## ⭐ Dale memoria a tu agente
 

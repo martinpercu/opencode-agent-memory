@@ -403,9 +403,7 @@ async function runInit() {
   const profile = PROFILES["1"];
 
   let AGENTFILE;
-  let CMDFILE;
   AGENTFILE = path.join(HOME, ".config", "opencode", "agents", `${agentName}.md`);
-  CMDFILE = path.join(HOME, ".config", "opencode", "commands", "jean-claude-uninstall.md");
 
   const created = [];
   const skipped = [];
@@ -423,7 +421,7 @@ async function runInit() {
 
   try {
     // paso 2.1: mkdir -p
-    const dirsToCreate = [MEMROOT, path.dirname(AGENTFILE), path.dirname(CMDFILE)];
+    const dirsToCreate = [MEMROOT, path.dirname(AGENTFILE)];
     if (seedProject) dirsToCreate.push(PROJDIR, MEMDIR);
     for (const dir of dirsToCreate) {
       try {
@@ -483,13 +481,6 @@ async function runInit() {
 
     // agent y command son nuestros: se pisan sin preguntar
     trackWrite(AGENTFILE, rendered);
-
-    // paso 2.4b: command file (uninstall from inside opencode)
-    const cmdTemplate = fs.readFileSync(
-      path.join(TEMPLATES_DIR, "command.md"),
-      "utf8"
-    );
-    trackWrite(CMDFILE, cmdTemplate);
 
     // paso 2.4c: skills (nuestros: se pisan sin preguntar)
     const SKILLS_SRC = path.join(TEMPLATES_DIR, "skills");
@@ -567,11 +558,10 @@ async function runInit() {
     prompter.close();
 
     console.log("");
-    console.log("s");
+    console.log("");
     console.log("✓ Jean Claude installed.");
     console.log("");
     if (importResult.imported.length > 0) {
-      console.log("");
       console.log("  Memories imported:");
       for (const item of importResult.imported) {
         const name = displayNameForSlug(item.slug, HOME, homeSlug);

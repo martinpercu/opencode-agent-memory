@@ -23,8 +23,6 @@ claims (what exists, what was imported) by listing the directories.
 ## Install layout (created by `jean-claude init`)
 
 - Agent: `~/.config/opencode/agents/jean-claude.md`
-- Command `/jean-claude-uninstall`:
-  `~/.config/opencode/commands/jean-claude-uninstall.md`
 - Skills: `~/.config/opencode/skills/jean-claude/` (this file) and
   `~/.config/opencode/skills/jean-claude-divergence/`
 - `default_agent: jean-claude` in `~/.config/opencode/opencode.json`
@@ -46,10 +44,9 @@ claims (what exists, what was imported) by listing the directories.
 
 ## Uninstall
 
-- `/jean-claude-uninstall` inside OpenCode, or
-  `npx -y github:martinpercu/opencode-jean-claude uninstall`: removes the
-  agent, the command, both skills, `{absoluteMemRoot}/`, and the
-  `default_agent` key. `~/.claude` is untouched.
+- `npx -y github:martinpercu/opencode-jean-claude uninstall`: removes the
+  agent, both skills, `{absoluteMemRoot}/`, and the `default_agent` key.
+  `~/.claude` is untouched.
 
 ## Troubleshooting
 
