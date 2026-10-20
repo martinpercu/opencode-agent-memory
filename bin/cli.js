@@ -361,27 +361,24 @@ async function runInit() {
 | |_| |  __/ (_| | | | | | |___ | | (_| | |_| | (_| |  __/  |_|
  \\___/ \\___|\\__,_|_| |_|  \\____||_|\\__,_|\\__,_|\\__,_|\\___|  (_)
 `);
-  console.log("");
-  console.log("");
-  console.log("🥋 About to install Jean Claude for OpenCode...");
-  console.log("");
-  console.log("");
-  console.log("This will set up:");
-  console.log("");
-  console.log("  • Agent: 'Jean Claude' registered in OpenCode");
-  console.log("  • Memory Architecture: Claude Code-style per-project memory (memory/MEMORY.md + fact files)");
-  console.log("  • Skills: 'jean-claude' + 'jean-claude-divergence' in OpenCode");
-  console.log("  • Storage Location: ~/.opencode-memory");
   if (localCandidates.length > 0) {
-    console.log(
-      `  • Claude Code memories found: ${localCandidates.length} project(s) — will be copied (read-only; ~/.claude is never modified)`
-    );
+    console.log("🥋 Jean Claude is ready to join OpenCode.");
+    console.log("");
+    console.log("  • Agent + skills");
+    console.log("  • Persistent project memory (local)");
+    const n = localCandidates.length;
+    console.log(`  • ${n} Claude Code ${n === 1 ? "memory" : "memories"} found — originals stay untouched`);
+  } else {
+    console.log("🥋 Jean Claude");
+    console.log("");
+    console.log("Persistent, project-specific memory for OpenCode.");
+    console.log("Local Markdown. No extra services.");
   }
   console.log("");
 
   let go = false;
   while (true) {
-    const raw = await ask("Ready to roundhouse kick amnesia out of your terminal? [Y/n]: ");
+    const raw = await ask("Ready to roundhouse kick amnesia? [Y/n] ");
     const parsed = parseYesNo(raw ?? "", true);
     if (parsed === null) {
       console.log("Please answer Y or n.");
@@ -557,16 +554,17 @@ async function runInit() {
 
     prompter.close();
 
-    console.log("");
-    console.log("");
     console.log("✓ Jean Claude installed.");
     console.log("");
     if (importResult.imported.length > 0) {
-      console.log("  Memories imported:");
+      const n = importResult.imported.length;
+      console.log(`  Imported memories (${n} ${n === 1 ? "project" : "projects"}):`);
       for (const item of importResult.imported) {
         const name = displayNameForSlug(item.slug, HOME, homeSlug);
-        console.log(`    + ${name}`);
+        console.log(`    • ${name}`);
       }
+    } else if (importResult.skipped.length === 0) {
+      console.log("  Your agent is ready to build project memory as you work.");
     }
     if (importResult.skipped.length > 0) {
       console.log("  Claude Code projects already covered by Jean Claude memories (kept as-is):");
@@ -575,8 +573,7 @@ async function runInit() {
       }
     }
     console.log("");
-    console.log('  Restart opencode and select "Jean Claude".');
-    console.log("");
+    console.log('  Restart OpenCode and select "Jean Claude".');
     if (importResult.failed.length > 0) {
       console.log("  Claude Code projects that could not be imported:");
       for (const slug of importResult.failed) console.log(`    ! ${slug}`);
