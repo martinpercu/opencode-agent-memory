@@ -1,4 +1,4 @@
-<p align="right">🌐 <a href="session-build.es.md">Leer en español</a></p>
+<p align="right">🇪🇸 <a href="session-build.es.md">Leer en español</a></p>
 
 # Example session with standard Build (illustrated reconstruction)
 

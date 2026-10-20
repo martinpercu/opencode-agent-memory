@@ -1,4 +1,4 @@
-<p align="right">🌐 <a href="README.es.md">Leer en español</a></p>
+<p align="right">🇪🇸 <a href="README.es.md">Leer en español</a></p>
 
 # Jean Claude 🥋
 

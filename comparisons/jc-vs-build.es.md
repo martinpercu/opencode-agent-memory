@@ -1,4 +1,4 @@
-<p align="right">🌐 <a href="jc-vs-build.md">Read in English</a></p>
+<p align="right">🇺🇸 <a href="jc-vs-build.md">Read in English</a></p>
 
 # Jean Claude vs Build — misma sesión, lado a lado
 

@@ -1,4 +1,4 @@
-<p align="right">🌐 <a href="session-build.md">Read in English</a></p>
+<p align="right">🇺🇸 <a href="session-build.md">Read in English</a></p>
 
 # Ejemplo de sesión con Build (reconstrucción ilustrativa)
 
