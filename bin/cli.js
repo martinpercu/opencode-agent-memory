@@ -353,7 +353,6 @@ async function runInit() {
   const claudeCandidates = scanClaudeProjectMemories(HOME);
   const homeSlug = HOME.replace(/\//g, "-");
   const localCandidates = claudeCandidates.filter((c) => isLocalSlug(c.slug, homeSlug));
-  const foreignCandidates = claudeCandidates.filter((c) => !isLocalSlug(c.slug, homeSlug));
 
   console.log(`
      _                     ____  _                 _         _ 
@@ -372,11 +371,6 @@ async function runInit() {
   if (localCandidates.length > 0) {
     console.log(
       `  • Claude Code memories found: ${localCandidates.length} project(s) — will be copied (read-only; ~/.claude is never modified)`
-    );
-  }
-  if (foreignCandidates.length > 0) {
-    console.log(
-      `  • Claude Code memories from another user/machine: ${foreignCandidates.length} project(s) — will be skipped`
     );
   }
   console.log("");
@@ -448,9 +442,7 @@ async function runInit() {
 
     // paso 2.3: INDEX — nunca tocar si existe
     if (!seedProject) {
-      console.log(
-        "Installed from root/home directory: skipping project seed (memory folders are created per project on first use)."
-      );
+      // instalado desde / o home: sin seed (las carpetas se crean por proyecto al primer uso)
     } else if (fs.existsSync(INDEX)) {
       skipped.push(INDEX);
       console.log("Memory index already exists, keeping it.");
@@ -575,19 +567,13 @@ async function runInit() {
       console.log("  Memories imported:");
       for (const item of importResult.imported) {
         const name = displayNameForSlug(item.slug, HOME, homeSlug);
-        console.log(`    + ${name} (${item.files} file${item.files === 1 ? "" : "s"})`);
+        console.log(`    + ${name}`);
       }
     }
     if (importResult.skipped.length > 0) {
       console.log("  Claude Code projects already covered by Jean Claude memories (kept as-is):");
       for (const slug of importResult.skipped) {
         console.log(`    - ${displayNameForSlug(slug, HOME, homeSlug)}`);
-      }
-    }
-    if (importResult.foreign.length > 0) {
-      console.log("  Claude Code projects from another user/machine (not imported):");
-      for (const slug of importResult.foreign) {
-        console.log(`    ○ ${displayNameForSlug(slug, HOME, homeSlug)}`);
       }
     }
     console.log("");
