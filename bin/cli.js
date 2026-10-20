@@ -616,6 +616,7 @@ async function runUninstall() {
     process.exit(130);
   });
 
+  console.log("");
   console.log("This uninstaller removes Jean Claude and his memory.");
   console.log("");
 
