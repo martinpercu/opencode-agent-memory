@@ -554,6 +554,7 @@ async function runInit() {
 
     prompter.close();
 
+    console.log("");
     console.log("✓ Jean Claude installed.");
     console.log("");
     if (importResult.imported.length > 0) {
