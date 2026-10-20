@@ -361,9 +361,13 @@ async function runInit() {
 | |_| |  __/ (_| | | | | | |___ | | (_| | |_| | (_| |  __/  |_|
  \\___/ \\___|\\__,_|_| |_|  \\____||_|\\__,_|\\__,_|\\__,_|\\___|  (_)
 `);
+  console.log("");
+  console.log("");
   console.log("🥋 About to install Jean Claude for OpenCode...");
   console.log("");
+  console.log("");
   console.log("This will set up:");
+  console.log("");
   console.log("  • Agent: 'Jean Claude' registered in OpenCode");
   console.log("  • Memory Architecture: Claude Code-style per-project memory (memory/MEMORY.md + fact files)");
   console.log("  • Skills: 'jean-claude' + 'jean-claude-divergence' in OpenCode");
@@ -562,8 +566,12 @@ async function runInit() {
 
     prompter.close();
 
+    console.log("");
+    console.log("s");
     console.log("✓ Jean Claude installed.");
+    console.log("");
     if (importResult.imported.length > 0) {
+      console.log("");
       console.log("  Memories imported:");
       for (const item of importResult.imported) {
         const name = displayNameForSlug(item.slug, HOME, homeSlug);
@@ -578,6 +586,7 @@ async function runInit() {
     }
     console.log("");
     console.log('  Restart opencode and select "Jean Claude".');
+    console.log("");
     if (importResult.failed.length > 0) {
       console.log("  Claude Code projects that could not be imported:");
       for (const slug of importResult.failed) console.log(`    ! ${slug}`);
