@@ -2,10 +2,10 @@
 
 # Ejemplo de sesión con Build (reconstrucción ilustrativa)
 
-> Mismo escenario y mismos mensajes de usuario que `session-jean-claude.es.md`.
-> La única variable que cambia es el agente — y con él, lo que el modelo recibe.
-> No es un log literal: es una reconstrucción fiel de qué recibe el modelo en
-> cada momento según el prompt real de build (equivalente a `opencode.md`, 329L).
+> **Reconstrucción ilustrada, no un transcript.** Mismo escenario y mensajes
+> que `session-jean-claude.es.md`; solo cambia el agente. La mecánica sigue
+> el prompt real de build (equivalente a `opencode.md`, 329L); el diálogo es
+> ilustrativo. Los tokens están medidos, no estimados.
 
 **Escenario:** proyecto Node en `/Users/martin/demo-shop`. Sin memorias en
 ningún lado (build no tiene de dónde leerlas).
@@ -62,17 +62,12 @@ y el bloque *Git and GitHub*.
 tests sin asumir framework, lint/typecheck, `git status`/`diff`/`log`, stage
 selectivo, commit. Build **sí** sabe hacer todo eso; su prompt lo cubre.
 
-**PERO el mensaje del commit sale distinto:**
-`feat(auth): add email validation` — **en inglés**. La preferencia de español se
-dijo en esta sesión así que el modelo la tiene a mano… ¿por qué no la aplica?
-Porque nada le dijo que "recordá" era una regla permanente del proyecto vs. un
-comentario al pasar: sin frontmatter `type: feedback` con `How to apply`, es
-texto más del contexto, fácil de diluir entre todo lo demás. (En la práctica un
-modelo bueno a veces lo aplica igual; la diferencia es garantía vs. suerte: JC
-tiene la regla tipada en archivo, build tiene un renglón de chat.)
+El mensaje del commit sale **en español en ambos**: la preferencia se dijo
+hace dos turnos y es contexto vivo — no hace falta ningún archivo. Empate;
+el payoff de JC está en la sesión siguiente, no en esta.
 
 **AGENTE (visible):**
-> Listo: validación agregada (`src/auth/signup.ts:42`), lint y tests OK, commiteado.
+> Listo: validación agregada (`src/auth/signup.ts:42`), lint y tests OK, commiteado como `feat(auth): validar email en signup`.
 
 **ESTADO DE ARCHIVOS:** cero cambios (igual que JC: el commit vive en git).
 
@@ -121,10 +116,14 @@ ambos agentes.
 |---|---|---|
 | t=0 | ~30k tok, 0 referencias a memoria | ~25.7k tok, reglas de memoria pero 0 memorias inyectadas |
 | "recordá X" | promesa conversacional, 0 archivos | 3-4 tool calls, hecho tipado + línea de índice |
-| Trabajo con preferencia vieja (misma sesión) | la aplica si el contexto la tiene a mano (suerte) | la aplica por regla tipada `feedback` (garantía) |
+| Trabajo con preferencia viva (misma sesión) | **empate** — ambos la aplican desde el contexto | **empate** |
 | Sesión nueva + pregunta de pasado | "no tengo registro" | `read` índice → `read` fact → responde exacto |
 | "olvidate X" | nada que borrar | borra archivo + línea; olvido verificable en disco |
 | Comando en AGENTS.md | lo sugiere y lo escribe (igual) | lo sugiere y lo escribe (igual) + copia tipada en memoria |
+| Miss de recall | "sin registro", siempre | "sin registro" si ninguna línea del índice pega |
+| Costo de guardar/recordar | 0 | 3-4 tool calls por guardado, ~2 reads por recuerdo; el índice crece |
+
+> Nota de honestidad: esto es Build stock sin workarounds manuales. Un AGENTS.md escrito a mano también persiste entre sesiones — el diferenciador es quién cura (vos a mano vs el agente solo).
 
 **En una línea:** build y JC ejecutan igual de bien *dentro* de una sesión; la
 diferencia entera vive en los bordes — qué entra al contexto en t=0 (nada en

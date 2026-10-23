@@ -2,10 +2,11 @@
 
 # Example session with standard Build (illustrated reconstruction)
 
-> Same scenario and same user messages as `session-jean-claude.md`.
-> The only variable that changes is the agent — and with it, what the model receives.
-> Not a literal log: a faithful reconstruction of what the model receives at each
-> moment, following the real Build prompt (`prompts/opencode/opencode.md` equivalent, 329 lines).
+> **Illustrated reconstruction, not a transcript.** Same scenario and user
+> messages as `session-jean-claude.md`; only the agent changes. The
+> mechanics follow the real Build prompt (`opencode.md` equivalent, 329
+> lines); the dialogue is illustrative. Token counts are measured, not
+> estimated.
 
 **Scenario:** Node project at `/Users/martin/demo-shop`. No memories anywhere
 (Build has nowhere to read them from).
@@ -57,21 +58,16 @@ persistence**: works while the session lives, evaporates when it closes.
 because it was stated **in this same session**). It triggers the base Doing
 tasks and Git and GitHub sections.
 
-**FLOW (invisible):** mechanically identical to JC — search, implement, tests
-without assuming the runner, lint/typecheck, `git status`/`diff`/`log`,
+**FLOW (invisible):** mechanically identical to JC — search, implement,
+tests without assuming the runner, lint/typecheck, `git status`/`diff`/`log`,
 selective stage, commit. Build **can** do all of that; its prompt covers it.
 
-**BUT the commit message comes out different:**
-`feat(auth): add email validation` — **in English**. The Spanish preference was
-said in this session so the model has it at hand… why doesn't it apply it?
-Because nothing told it that "remember" was a permanent project rule vs. a
-passing comment: with no `type: feedback` fact and no `How to apply`, it's one
-more line of context, easy to dilute. (In practice a good model sometimes applies
-it anyway; the difference is guarantee vs. luck: JC has the typed rule on file,
-Build has a line of chat.)
+The commit message comes out **in Spanish in both**: the preference was
+stated two turns ago and is live context — no file needed. A tie; JC's
+payoff is next session, not this one.
 
 **AGENT (visible):**
-> Done: validation added (`src/auth/signup.ts:42`), lint and tests green, committed.
+> Done: validation added (`src/auth/signup.ts:42`), lint and tests green, committed as `feat(auth): validar email en signup`.
 
 **FILES:** zero changes (same as JC: the commit lives in git).
 
@@ -119,10 +115,14 @@ injects into every future t=0 — that cache is shared by both agents.
 |---|---|---|
 | t=0 | ~30k tokens, 0 memory references | ~25.7k tokens, memory rules but 0 injected memories |
 | "remember X" | conversational promise, 0 files | 3–4 tool calls, typed fact + index line |
-| Working with an old preference (same session) | applies it if the context has it handy (luck) | applies it via typed `feedback` rule (guarantee) |
+| Working with a live preference (same session) | **tie** — both apply it from context | **tie** |
 | New session + question about the past | "I don't have that recorded" | `read` index → `read` fact → answers exactly |
+| Recall miss | "no record", always | "no record" if no index line matches |
 | "forget X" | nothing to delete | deletes file + line; forgetting verifiable with `ls` |
 | Command in AGENTS.md | suggests and writes it (same) | suggests and writes it (same) + typed copy in memory |
+| Cost of saving/recalling | 0 | 3–4 tool calls per save, ~2 reads per recall; the index grows |
+
+> Fairness note: this is stock Build with no hand-maintained workarounds. A hand-written AGENTS.md also persists across sessions — the differentiator is who curates (you by hand vs the agent alone).
 
 **In one line:** Build and JC execute equally well *inside* a session; the whole
 difference lives at the edges — what enters context at t=0 (nothing in both,

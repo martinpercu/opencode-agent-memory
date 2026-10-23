@@ -2,8 +2,10 @@
 
 # Jean Claude vs Build — misma sesión, lado a lado
 
-> Un escenario, un usuario, cinco turnos. Cada turno muestra **qué recibe cada
-> modelo**, qué hace y qué responde. Versiones completas sin abreviar:
+> **Reconstrucción ilustrada, no un transcript.** La mecánica —qué recibe cada
+> modelo, qué regla dispara, qué archivos cambian— sigue los prompts reales
+> línea por línea. El diálogo es ilustrativo. Los tokens están medidos de los
+> archivos reales (`wc -c` ÷ 4), no estimados. Versiones completas sin abreviar:
 > [Jean Claude](session-jean-claude.es.md) · [Build](session-build.es.md).
 
 **Escenario:** proyecto Node en `/Users/martin/demo-shop` → slug `-Users-martin-demo-shop`.
@@ -17,6 +19,12 @@ Memoria del proyecto (al empezar): **vacía**.
 | Agent prompt | ~1.7k: reglas de memoria + Doing tasks + Git and GitHub + Tool discipline | ~6.2k: prompt default completo (tono, doc de 11 tools, git) |
 | Memorias inyectadas | **0** — el índice se lee con `read` bajo demanda | **0** — no hay de dónde leer |
 | **Total t=0** | **≈ 25.7k tok** | **≈ 30k tok** |
+
+> **Nota de honestidad.** Esto compara JC contra Build stock, sin workarounds
+> manuales. Un usuario prolijo puede mantener `AGENTS.md` a mano y lograr
+> persistencia entre sesiones sin JC. El diferenciador no es memoria vs
+> amnesia — es **quién cura**: vos, a mano, en un doc vs el agente solo,
+> por hecho, con índice, tipos y chequeos de staleness.
 
 ---
 
@@ -33,20 +41,20 @@ Memoria del proyecto (al empezar): **vacía**.
 
 ---
 
-## Turno 2 — "agregá validación de email en el signup y commiteá" (misma sesión)
+## Turno 2 — "agregá validación de email en el signup y commiteá" (misma sesión) — **empate**
 
 | | 🥋 Jean Claude | 🔧 Build |
 |---|---|---|
-| **Recibe** | msg + contexto vivo (índice ya leído en turno 1) → *Doing tasks* | msg + contexto vivo (preferencia flotando en el chat) → Doing tasks base |
-| **Hace** | search → implementa → tests + lint (sin asumir runner) → `git status/diff/log` → stage solo signup → commit | mecánicamente idéntico — el prompt de Build lo cubre todo |
-| **Mensaje del commit** | `feat(auth): validar email en signup` — **español vía memoria `feedback`** | `feat(auth): add email validation` — **inglés** (la preferencia era texto de chat, diluida) |
+| **Recibe** | msg + contexto vivo (índice ya leído en turno 1) → *Doing tasks* | msg + contexto vivo — la preferencia de español se dijo hace dos turnos y está fresca para ambos → *Doing tasks* base |
+| **Hace** | search → implementa → tests sin asumir runner → `git status/diff/log` → stage solo signup → commit | mecánicamente idéntico — el prompt de Build lo cubre todo |
+| **Mensaje del commit** | `feat(auth): validar email en signup` — español. Ambos la aplican: la preferencia es contexto vivo, no hace falta archivo. | `feat(auth): validar email en signup` — español, misma razón |
 | **Archivos después** | sin cambio en memoria (el commit vive en git history) | sin cambio |
 
-> **Diferencia:** garantía vs. suerte. JC aplica la preferencia por regla tipada; Build puede o no — nada le dijo que "recordá" era permanente.
+> **Diferencia: ninguna.** Dentro de una sesión, Build es igual a JC. La ventaja de JC no es aplicar la preferencia ahora — es seguir teniéndola en un mes. El payoff es el turno 3, no este.
 
 ---
 
-## Turno 3 — SESIÓN NUEVA: "¿qué estándar de commits uso?"
+## Turno 3 — SESIÓN NUEVA: "¿qué estándar de commits uso?" — **el momento decisivo**
 
 | | 🥋 Jean Claude | 🔧 Build |
 |---|---|---|
@@ -65,7 +73,7 @@ Memoria del proyecto (al empezar): **vacía**.
 | **Flujo** | usuario: `npm run test:unit` → corre → verde → **sugiere AGENTS.md** → usuario agrega "guardalo en memoria también" → `edit` AGENTS.md + `write` `test-command.md` (`type: project`) + línea al índice | usuario: `npm run test:unit` → corre → verde → **sugiere AGENTS.md** → queda ahí, fin de la historia |
 | **Sobrevive vía** | AGENTS.md (gratis en todo t=0 futuro) **+** memoria `project` tipada | solo AGENTS.md — cache compartido, ambos agentes lo reciben |
 
-> **Diferencia:** ninguna en conducta, una en registración. Esta regla no es memoria — es el prompt base que JC heredó.
+> **Dos stores, una jerarquía.** `AGENTS.md` es el manual del usuario (escrito a mano, versionado en git, inyectado gratis cada t=0); la memoria del proyecto es el diario del agente (curaduría del agente, fuera del repo). En conflicto gana el manual — la memoria es contexto de fondo, no instrucción. La duplicación es deliberada: distinto dueño, distinto trabajo. En conducta son idénticos acá: esta regla no es memoria, es el prompt base que JC heredó.
 
 ---
 
@@ -81,16 +89,22 @@ Memoria del proyecto (al empezar): **vacía**.
 
 ---
 
-## Balance
+## Balance — incluyendo los costos de JC
 
 | Momento | 🥋 Jean Claude | 🔧 Build |
 |---|---|---|
 | t=0 | ~25.7k, reglas pero 0 memorias inyectadas | ~30k, 0 referencias a memoria |
 | "recordá X" | 3-4 tool calls, hecho tipado + línea de índice | promesa conversacional, 0 archivos |
-| Preferencia vieja, misma sesión | regla `feedback` tipada (garantía) | contexto de chat (suerte) |
-| Sesión nueva + pregunta de pasado | `read` → `read` → respuesta exacta | "no tengo registro" |
+| Preferencia viva, misma sesión | **empate** — ambos la aplican desde el contexto | **empate** |
+| Sesión nueva + pregunta de pasado | `read` índice → `read` fact → responde exacto | "no tengo registro" |
 | "olvidate X" | borra archivo + línea (verificable con `ls`) | nada que borrar |
 | Truco AGENTS.md | igual + copia tipada en memoria | igual |
+| Miss de recall (ninguna línea pega) | "sin registro" — igual que Build | "sin registro", siempre |
+| Costo de guardar | 3-4 tool calls + tokens, una vez por hecho | 0 (no se guarda nada) |
+| Costo de recordar | ~2 reads por sesión relevante (latencia + tokens); el índice crece con cada memoria | 0 |
+| Datos stale | posibles; mitigados con verificar-antes-de-recomendar, no eliminados | n/a |
+
+El recall es útil pero no infalible — es el aviso del propio README, y la versión honesta de esta tabla: cuando el match de relevancia falla, JC responde igual que Build.
 
 **En una línea:** ambos ejecutan igual de bien *dentro* de una sesión; la
 diferencia entera vive en los bordes — qué entra al contexto en t=0 (nada en

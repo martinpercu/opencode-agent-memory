@@ -2,9 +2,11 @@
 
 # Ejemplo de sesión con Jean Claude (reconstrucción ilustrativa)
 
-> No es un log literal: es una reconstrucción fiel de **qué recibe el modelo en
-> cada momento** según las reglas reales del prompt (`templates/instructions.md`).
-> Hermano: `session-build.es.md` (mismo escenario, mismo usuario, otro agente).
+> **Reconstrucción ilustrada, no un transcript.** Mismo escenario y usuario
+> que `session-build.es.md`; solo cambia el agente. La mecánica —qué recibe
+> el modelo en cada momento— sigue las reglas reales del prompt
+> (`templates/instructions.md`); el diálogo es ilustrativo. Los tokens
+> están medidos, no estimados.
 
 **Escenario:** proyecto Node en `/Users/martin/demo-shop` → slug `-Users-martin-demo-shop`.
 Memoria del proyecto (al empezar): **vacía**.
@@ -67,7 +69,9 @@ lee `package.json`/README para no asumir el framework de test → `bash` (tests 
 lint/typecheck) → `git status` / `git diff` / `git log --oneline -10` (regla
 *Git and GitHub*: inspeccionar antes de commitear, `instructions.md:117-118`) →
 `stage` solo los archivos del signup → `commit -m "feat(auth): validar email en signup"`.
-El mensaje sale **en español por la memoria `feedback`**; commitea sin preguntar
+El mensaje sale **en español por la memoria `feedback`** (Build haría lo
+mismo acá — la preferencia es contexto vivo para ambos; la regla tipada
+rinde en la sesión siguiente); commitea sin preguntar
 porque el usuario lo pidió explícito.
 
 **AGENTE (visible):**
@@ -166,5 +170,6 @@ es un archivo menos, no una promesa conversacional.
 - **Lecturas de memoria:** ~2 `read`s por sesión donde aplica (índice + fact). Donde no aplica: 1 `read` al índice y nada más.
 - **Costo en contexto:** índice (cientos de tok) + solo los facts abiertos (~200 tok c/u). Nada precargado.
 - **Escrituras:** inmediatas, durante la conversación — si el chat terminara a mitad, lo ya guardado persiste.
+- **Límites honestos:** cada guardado cuesta 3-4 tool calls; cada recuerdo, ~2 reads; si ninguna línea del índice pega, la respuesta es "no tengo nada" igual que Build. Útil pero no infalible.
 
 ← [Volver al README](../README.es.md)

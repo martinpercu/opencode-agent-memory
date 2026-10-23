@@ -2,9 +2,11 @@
 
 # Example session with Jean Claude (illustrated reconstruction)
 
-> Not a literal log: a faithful reconstruction of **what the model receives at
-> each moment**, following the real prompt rules (`templates/instructions.md`).
-> Sibling: `session-build.md` (same scenario, same user messages, other agent).
+> **Illustrated reconstruction, not a transcript.** Same scenario and user
+> messages as `session-build.md`; only the agent changes. The mechanics —
+> what the model receives each moment — follow the real prompt rules
+> (`templates/instructions.md`); the dialogue is illustrative. Token counts
+> are measured, not estimated.
 
 **Scenario:** Node project at `/Users/martin/demo-shop` → slug `-Users-martin-demo-shop`.
 Project memory at start: **empty**.
@@ -66,7 +68,7 @@ in turn 1, no need to re-read). It triggers *Doing tasks* (`instructions.md:95-1
 lint/typecheck) → `git status` / `git diff` / `git log --oneline -10` (*Git and
 GitHub* rule: inspect before committing, `instructions.md:117-118`) → stages
 only the signup files → `commit -m "feat(auth): validar email en signup"`.
-The message comes out **in Spanish because of the `feedback` memory**; it
+The message comes out **in Spanish because of the `feedback` memory** (Build would do the same here — the preference is live context for both; the typed rule pays off next session); it
 commits without asking because the user explicitly requested it.
 
 **AGENT (visible):**
@@ -164,3 +166,4 @@ file fewer, not a conversational promise.
 - **Memory reads:** ~2 `read`s per session where relevant (index + fact). Where irrelevant: 1 index `read`, nothing more.
 - **Context cost:** index (hundreds of tokens) + only opened facts (~200 tokens each). Nothing preloaded.
 - **Writes:** immediate, during the conversation — if the chat ended halfway, what's saved persists.
+- **Honest limits:** every save costs 3–4 tool calls; every recall costs ~2 reads; if no index line matches, the answer is "nothing stored" just like Build. Useful but not infallible.
