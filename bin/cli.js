@@ -498,6 +498,7 @@ async function runInit() {
       }
       skillText = skillText.split("{absoluteMemRoot}").join(MEMROOT);
       skillText = skillText.split("{claudeProjectsDir}").join(CLAUDE_PROJECTS);
+      skillText = skillText.split("{version}").join(getVersion());
       const destSkillDir = path.join(SKILLS_DEST, entry.name);
       try {
         fs.mkdirSync(destSkillDir, { recursive: true });

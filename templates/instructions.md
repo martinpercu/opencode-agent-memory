@@ -103,6 +103,8 @@ frontmatter, never memory content. Keep entries under ~150 characters.
   history, AGENTS.md/CLAUDE.md content), or what only matters to this
   conversation (in-progress task state, temporary values). If asked to
   remember one of those, ask what was non-obvious about it and save that.
+- Never save secrets: passwords, API keys, tokens, or credentials of any
+  kind — even if the user explicitly asks you to remember them.
 - Write during the conversation, not at the end — if the chat ended right
   now, the fact should already be saved.
 
