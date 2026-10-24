@@ -10,28 +10,34 @@
 
 **Vos, a ambos:**
 
-> Para este proyecto, los commits van en español, cortos y con scope. Recordalo.
+> En esta tienda, si ya se generó la etiqueta de envío, el pedido no se puede cancelar automáticamente. Tiene que pasar a revisión manual. Recordá esta regla.
 
 | 🥋 Jean Claude | 🔧 Build estándar |
 |---|---|
-| “Anotado. Lo recordaré para futuras sesiones.” | “¡Entendido! Los commits serán en español, cortos y con scope.” |
-| **Guarda** la preferencia en su memoria. | La tiene presente durante esta conversación. |
+| "Entendido. Voy a recordar que los pedidos con etiqueta de envío generada requieren revisión manual antes de cancelarse." | "Entendido. Si ya se generó la etiqueta, el pedido pasa a revisión manual." |
+| **Guarda** la regla para futuras sesiones. | La regla está presente en la conversación actual. |
 
-## 2. Mañana — sesión nueva
+En esta sesión, los dos entendieron lo que pediste. La diferencia todavía no se nota.
+
+## 2. Mañana — sesión nueva, otra funcionalidad
+
+La conversación anterior ya terminó. Volvés al mismo proyecto a trabajar en otra cosa:
 
 **Vos, a ambos:**
 
-> ¿Qué formato usamos para los commits?
+> Agregá un botón para cancelar pedidos en la pantalla de detalle.
 
 | 🥋 Jean Claude | 🔧 Build estándar |
 |---|---|
-| “En español, cortos y con scope. Por ejemplo: `feat(auth): validar email en signup`.” | “No tengo disponible lo que acordamos ayer. ¿Qué formato preferís?” |
-| **Recupera** lo que guardó. | La sesión anterior terminó; esa preferencia no está disponible automáticamente. |
+| "Voy a permitir la cancelación automática si todavía no se generó la etiqueta. En caso contrario, el pedido pasará a revisión manual." | "¿Qué debería ocurrir si ya se generó la etiqueta de envío?" |
+| **Aplica** la regla que guardó ayer a la funcionalidad nueva. | Hace una pregunta razonable: esa regla no forma parte de su contexto actual. |
 
 ---
 
-**Jean Claude lleva a OpenCode el enfoque de memoria automática de Claude Code: guardar lo importante y recuperarlo cuando volvés.**
+**Jean Claude lleva a OpenCode el enfoque de memoria automática de Claude Code: el agente aprende qué vale la pena recordar y puede recuperarlo cuando volvés.**
 
-*Build también puede conservar instrucciones si las escribís manualmente en `AGENTS.md`. La recuperación de Jean Claude tampoco es infalible.*
+Con Build estándar también podés conservar información escribiendo tus propias instrucciones en `AGENTS.md`. Jean Claude suma una memoria que el propio agente construye y consulta, sin que tengas que mantener manualmente la lista de recuerdos.
+
+La recuperación no es infalible: este ejemplo muestra un caso concreto, no garantiza que encuentre cada recuerdo en cualquier situación.
 
 [Ver Jean Claude en GitHub](https://github.com/martinpercu/opencode-jean-claude) · [Volver al README](../README.es.md)
