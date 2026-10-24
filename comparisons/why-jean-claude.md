@@ -36,11 +36,11 @@ The previous conversation is over. You're back on the same project and ask:
 
 ## That's the difference
 
-**Jean Claude codes just like Build inside a session. The difference is that it can remember what matters when you come back.**
+**Jean Claude brings Claude Code's auto-memory approach to OpenCode: the agent learns what's worth remembering and can retrieve it when you come back.**
 
-With standard Build, you can get persistence if you save instructions yourself in a project file. Jean Claude adds a memory system that saves and retrieves those details without you having to maintain a reminder list manually.
+With standard Build you can also preserve information by writing your own instructions in `AGENTS.md`. Jean Claude adds a memory the agent itself builds and queries, without you having to maintain the reminder list manually.
 
-Recall is useful but not infallible: this example shows one concrete case — it doesn't guarantee every memory will be found in every situation.
+Recall is not infallible: this example shows one concrete case — it doesn't guarantee every memory will be found in every situation.
 
 ---
 

@@ -36,11 +36,11 @@ La conversación anterior ya terminó. Volvés al mismo proyecto y preguntás:
 
 ## Esa es la diferencia
 
-**Jean Claude programa igual que Build dentro de una sesión. La diferencia es que puede recordar lo importante cuando volvés.**
+**Jean Claude lleva a OpenCode el enfoque de memoria automática de Claude Code: el agente aprende qué vale la pena recordar y puede recuperarlo cuando volvés.**
 
-Con Build estándar, podés conseguir persistencia si guardás las instrucciones por tu cuenta en un archivo de proyecto. Jean Claude suma un sistema de memoria que guarda y recupera esos detalles sin que tengas que mantener manualmente la lista.
+Con Build estándar también podés conservar información escribiendo tus propias instrucciones en `AGENTS.md`. Jean Claude suma una memoria que el propio agente construye y consulta, sin que tengas que mantener manualmente la lista de recuerdos.
 
-El recall es útil pero no infalible: este ejemplo muestra un caso concreto, no garantiza que encuentre cada recuerdo en cualquier situación.
+La recuperación no es infalible: este ejemplo muestra un caso concreto, no garantiza que encuentre cada recuerdo en cualquier situación.
 
 ---
 
