@@ -2,11 +2,11 @@
 
 # Jean Claude vs. Build
 
-**Los dos te entienden hoy. ¿Pero qué recuerdan mañana?**
+**Los dos te entienden ahora. ¿Y después?**
 
 *Ejemplo ilustrativo: mismo proyecto, misma instrucción, dos sesiones.*
 
-## 1. Hoy — primera sesión
+## 1. Primera sesión — les enseñás una vez
 
 **Vos, a ambos:**
 
@@ -19,9 +19,7 @@
 
 En esta sesión, los dos entendieron lo que pediste. La diferencia todavía no se nota.
 
-## 2. Mañana — sesión nueva, otra funcionalidad
-
-La conversación anterior ya terminó. Volvés al mismo proyecto a trabajar en otra cosa:
+## 2. Otra funcionalidad — cuando la regla importa
 
 **Vos, a ambos:**
 
@@ -30,7 +28,7 @@ La conversación anterior ya terminó. Volvés al mismo proyecto a trabajar en o
 | 🥋 Jean Claude | 🔧 Build estándar |
 |---|---|
 | "Voy a permitir la cancelación automática si todavía no se generó la etiqueta. En caso contrario, el pedido pasará a revisión manual." | "¿Qué debería ocurrir si ya se generó la etiqueta de envío?" |
-| **Aplica** la regla que guardó ayer a la funcionalidad nueva. | Hace una pregunta razonable: esa regla no forma parte de su contexto actual. |
+| **Aplica** la regla guardada a la funcionalidad nueva. | Hace una pregunta razonable: esa regla no forma parte de su contexto actual. |
 
 ---
 

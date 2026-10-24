@@ -2,11 +2,11 @@
 
 # Jean Claude vs. Build
 
-**Both understand you today. But what do they remember tomorrow?**
+**Both understand you now. What about later?**
 
 *Illustrative example: same project, same instruction, two sessions.*
 
-## 1. Today — first session
+## 1. First session — you teach them once
 
 **You, to both:**
 
@@ -19,9 +19,7 @@
 
 In this session, both understood what you asked. The difference doesn't show yet.
 
-## 2. Tomorrow — new session, another feature
-
-The previous conversation is over. You're back on the same project working on something else:
+## 2. Another feature — when the rule matters
 
 **You, to both:**
 
@@ -30,7 +28,7 @@ The previous conversation is over. You're back on the same project working on so
 | 🥋 Jean Claude | 🔧 Standard Build |
 |---|---|
 | "I'll allow automatic cancellation if the label hasn't been generated yet. Otherwise, the order will go to manual review." | "What should happen if the shipping label was already generated?" |
-| **Applies** the rule it saved yesterday to the new feature. | Asks a reasonable question: that rule isn't part of its current context. |
+| **Applies** the saved rule to the new feature. | Asks a reasonable question: that rule isn't part of its current context. |
 
 ---
 
