@@ -2,40 +2,44 @@
 
 # Jean Claude vs. Build
 
-**Both understand you now. What about later?**
+**You teach a rule once. Who remembers it when you come back?**
 
-*Illustrative example: same project, same instruction, two sessions.*
-
-## 1. First session — you teach them once
-
-**You, to both:**
-
-> In this store, if the shipping label was already generated, the order cannot be cancelled automatically. It has to go to manual review. Remember this rule.
-
-| 🥋 Jean Claude | 🔧 Standard Build |
-|---|---|
-| "Understood. I'll remember that orders with a generated shipping label require manual review before cancellation." | "Understood. If the label was generated, the order goes to manual review." |
-| **Saves** the rule for future sessions. | The rule is present in the current conversation. |
-
-In this session, both understood what you asked. The difference doesn't show yet.
-
-## 2. Another feature — when the rule matters
-
-**You, to both:**
-
-> Add a button to cancel orders on the detail screen.
-
-| 🥋 Jean Claude | 🔧 Standard Build |
-|---|---|
-| "I'll allow automatic cancellation if the label hasn't been generated yet. Otherwise, the order will go to manual review." | "What should happen if the shipping label was already generated?" |
-| **Applies** the saved rule to the new feature. | Asks a reasonable question: that rule isn't part of its current context. |
+*One project. Two independent sessions. The same business rule.*
 
 ---
 
-**Jean Claude brings Claude Code's auto-memory approach to OpenCode: the agent learns what's worth remembering and can retrieve it when you come back.**
+## Session A — You set a rule
 
-With standard Build you can also preserve information by writing your own instructions in `AGENTS.md`. Jean Claude adds a memory the agent itself builds and queries, without you having to maintain the reminder list manually.
+**You, to both:**
 
-Recall is not infallible: this example shows one concrete case — it doesn't guarantee every memory will be found in every situation.
+> In this store, if an order already has a shipping label, don't cancel it automatically: it must go to manual review. Remember that.
+
+| 🥋 Jean Claude | 🔧 Standard Build |
+|---|---|
+| "Understood. I'll remember this rule for future tasks." | "Understood. Orders with a shipping label require manual review." |
+| **Saves** the rule for other sessions. | Keeps it in mind during this conversation. |
+
+---
+
+## Session B — You build another feature
+
+**You, to both:**
+
+> Add an option to cancel orders from the detail screen.
+
+| 🥋 Jean Claude | 🔧 Standard Build |
+|---|---|
+| "I'll add the option. If the order already has a shipping label, I'll send it to manual review." | "I'll add the cancellation option. What should happen with orders that already have a shipping label?" |
+| **Applies the rule without you having to repeat it.** | Needs you to state that rule in this session. |
+
+---
+
+## The difference
+
+**Jean Claude brings Claude Code's auto-memory approach to OpenCode: saving what matters and retrieving it when another task needs it.**
+
+Standard Build can also follow instructions saved in `AGENTS.md`. Jean Claude adds a memory the agent itself builds and queries, without you having to maintain a reminder list manually.
+
+*Illustrative example, not a literal transcript. Memory retrieval is not infallible.*
 
 [See Jean Claude on GitHub](https://github.com/martinpercu/opencode-jean-claude) · [Back to README](../README.md)
